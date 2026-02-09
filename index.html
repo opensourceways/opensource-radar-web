@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technology Radar</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <h1 class="header-title">Technology Radar</h1>
+      <div class="header-actions">
+        <label class="upload-btn" for="file-input">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 1z"/>
+          </svg>
+          Load Excel
+        </label>
+        <input type="file" id="file-input" accept=".xlsx,.xls" hidden>
+        <button class="btn-sample" id="btn-load-sample">Load Sample Data</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- Summary / Radar View -->
+    <section id="view-radar" class="view active">
+      <div class="radar-container">
+        <div id="radar-chart"></div>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot legend-new"></span> New</span>
+        <span class="legend-item"><span class="legend-dot legend-moved"></span> Moved in/out</span>
+        <span class="legend-item"><span class="legend-dot legend-nochange"></span> No change</span>
+      </div>
+    </section>
+
+    <!-- Detail View -->
+    <section id="view-detail" class="view">
+      <div class="detail-back">
+        <button id="btn-back" class="btn-back">&larr; Back to Radar</button>
+      </div>
+      <div class="detail-layout">
+        <div class="detail-radar-col">
+          <div id="detail-radar-chart"></div>
+        </div>
+        <div class="detail-list-col" id="detail-list">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/radar.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
