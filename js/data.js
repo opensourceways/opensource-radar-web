@@ -4,7 +4,7 @@
  * Expected Excel columns:
  *   id        - number (display index on radar)
  *   name      - string (technology name)
- *   quadrant  - string: "Techniques" | "Tools" | "Platforms" | "Languages & Frameworks"
+ *   quadrant  - string: "Inference" | "Finetuning" | "Pretraining" | "Kernel" | "Reinforcement Learning"
  *   ring      - string: "Adopt" | "Trial" | "Assess" | "Hold"
  *   movement  - string: "new" | "moved" | "none"
  *   description - string (HTML-safe text)
@@ -12,21 +12,23 @@
 
 const RadarData = (() => {
   // Canonical ordering
-  const QUADRANTS = ['Techniques', 'Tools', 'Platforms', 'Languages & Frameworks'];
+  const QUADRANTS = ['Inference', 'Finetuning', 'Pretraining', 'Kernel', 'Reinforcement Learning'];
   const RINGS = ['Adopt', 'Trial', 'Assess', 'Hold'];
 
   const QUADRANT_COLORS = {
-    'Techniques':              '#3a8ea5',
-    'Tools':                   '#587e2e',
-    'Platforms':               '#b5872a',
-    'Languages & Frameworks':  '#8b2252',
+    'Inference':                '#3a8ea5',
+    'Finetuning':               '#587e2e',
+    'Pretraining':              '#b5872a',
+    'Kernel':                   '#8b2252',
+    'Reinforcement Learning':   '#5b5db3',
   };
 
   const QUADRANT_KEYS = {
-    'Techniques':              'techniques',
-    'Tools':                   'tools',
-    'Platforms':               'platforms',
-    'Languages & Frameworks':  'languages',
+    'Inference':                'inference',
+    'Finetuning':               'finetuning',
+    'Pretraining':              'pretraining',
+    'Kernel':                   'kernel',
+    'Reinforcement Learning':   'reinforcement',
   };
 
   /**
@@ -68,7 +70,7 @@ const RadarData = (() => {
    * Generate sample data resembling a real technology radar.
    */
   function getSampleData() {
-    return [
+    const data = [
       // === Techniques ===
       { id: 1, name: 'Design Systems', quadrant: 'Techniques', ring: 'Adopt', movement: 'none', description: 'Design systems provide a shared set of principles and patterns that help teams build consistent user interfaces at scale. By codifying design decisions into reusable components and guidelines, organizations can accelerate development while maintaining quality.' },
       { id: 2, name: 'Retrieval-Augmented Generation (RAG)', quadrant: 'Techniques', ring: 'Adopt', movement: 'none', description: 'RAG combines information retrieval with generative AI to produce more accurate, grounded responses. By fetching relevant documents before generating text, RAG reduces hallucination and improves factual accuracy in LLM-powered applications.' },
@@ -192,6 +194,12 @@ const RadarData = (() => {
       { id: 95, name: 'Gleam', quadrant: 'Languages & Frameworks', ring: 'Assess', movement: 'new', description: 'A type-safe functional language that runs on the BEAM (Erlang VM). Gleam combines Erlang/OTP reliability with modern developer experience including a friendly type system and excellent tooling.' },
       { id: 96, name: 'WGSL (WebGPU Shading)', quadrant: 'Languages & Frameworks', ring: 'Assess', movement: 'new', description: 'The shading language for WebGPU, enabling GPU compute and graphics on the web. As WebGPU gains browser support, WGSL becomes relevant for high-performance web applications and AI inference in the browser.' },
     ];
+
+    return data.map((item) => {
+      const id = Number(item.id) || 0;
+      const index = ((id - 1) % QUADRANTS.length + QUADRANTS.length) % QUADRANTS.length;
+      return { ...item, quadrant: QUADRANTS[index] };
+    });
   }
 
   /**

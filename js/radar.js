@@ -2,8 +2,8 @@
  * Radar rendering module - draws SVG-based radar chart.
  *
  * Supports two modes:
- *   1. Full radar  (all 4 quadrants) - used on summary page
- *   2. Single quadrant detail radar  - used on detail page
+ *   1. Full radar  (all sections) - used on summary page
+ *   2. Single section detail radar  - used on detail page
  */
 
 const RadarChart = (() => {
@@ -13,13 +13,7 @@ const RadarChart = (() => {
   const SIZE_SCALE = 1.1;
 
   /**
-   * Render full 4-quadrant radar.
-   *
-   * Layout (matching Thoughtworks):
-   *   Top-left:     Techniques   (quadrant 0)
-   *   Top-right:    Tools        (quadrant 1)
-   *   Bottom-left:  Platforms    (quadrant 2)
-   *   Bottom-right: Languages    (quadrant 3)
+  * Render full multi-section radar.
    *
    * @param {HTMLElement} container
    * @param {Array} items - radar items
@@ -40,9 +34,26 @@ const RadarChart = (() => {
     // Background rings
     drawRings(svg, cx, cy, maxR, true);
 
-    // Quadrant dividers (cross lines)
-    line(svg, cx, 10, cx, size - 10, '#ccc', 1);
-    line(svg, 10, cy, size - 10, cy, '#ccc', 1);
+    // Section dividers
+    const sectionNames = RadarData.QUADRANTS;
+    const sectionCount = sectionNames.length;
+    const sectionAngle = (Math.PI * 2) / sectionCount;
+    const baseAngle = -Math.PI / 2; // top
+    const startAngle0 = baseAngle - sectionAngle / 2;
+    const dividerR = maxR + 10;
+
+    for (let i = 0; i < sectionCount; i++) {
+      const angle = startAngle0 + i * sectionAngle;
+      line(
+        svg,
+        cx,
+        cy,
+        cx + dividerR * Math.cos(angle),
+        cy + dividerR * Math.sin(angle),
+        '#ccc',
+        1
+      );
+    }
 
     // Ring labels on the horizontal axis (middle of chart)
     // Adopt nearest center, Hold at edge
@@ -58,27 +69,24 @@ const RadarChart = (() => {
       text(svg, cx - midR, cy + 4, ringNames[i], 'ring-label', 'middle');
     }
 
-    // Quadrant labels
-    const quadLabels = [
-      { name: 'Techniques', x: 14, y: 22, anchor: 'start' },
-      { name: 'Tools', x: size - 14, y: 22, anchor: 'end' },
-      { name: 'Platforms', x: 14, y: size - 10, anchor: 'start' },
-      { name: 'Languages & Frameworks', x: size - 14, y: size - 22, anchor: 'end' },
-    ];
-
-    quadLabels.forEach((ql) => {
-      const label = text(svg, ql.x, ql.y, ql.name + ' >', 'quadrant-label', ql.anchor);
+    // Section labels
+    const labelRadius = maxR + 16;
+    sectionNames.forEach((name, i) => {
+      const angle = baseAngle + i * sectionAngle;
+      const x = cx + labelRadius * Math.cos(angle);
+      const y = cy + labelRadius * Math.sin(angle) + 4;
+      const anchor = labelAnchorForAngle(angle);
+      const label = text(svg, x, y, name + ' >', 'quadrant-label', anchor);
       label.style.cursor = 'pointer';
-      label.addEventListener('click', () => onQuadrantClick(ql.name));
+      label.addEventListener('click', () => onQuadrantClick(name));
     });
 
     // Place blips
-    const quadrantAngles = {
-      'Techniques':              { startAngle: Math.PI, endAngle: Math.PI * 1.5 },    // top-left
-      'Tools':                   { startAngle: Math.PI * 1.5, endAngle: Math.PI * 2 }, // top-right
-      'Platforms':               { startAngle: Math.PI * 0.5, endAngle: Math.PI },     // bottom-left
-      'Languages & Frameworks':  { startAngle: 0, endAngle: Math.PI * 0.5 },           // bottom-right
-    };
+    const quadrantAngles = {};
+    sectionNames.forEach((name, i) => {
+      const start = startAngle0 + i * sectionAngle;
+      quadrantAngles[name] = { startAngle: start, endAngle: start + sectionAngle };
+    });
 
     const tooltip = createTooltip(container);
 
@@ -118,7 +126,7 @@ const RadarChart = (() => {
   }
 
   /**
-   * Render single-quadrant detail radar.
+  * Render single-section detail radar.
    *
    * @param {HTMLElement} container
    * @param {Array} items - items in this quadrant only
@@ -130,21 +138,30 @@ const RadarChart = (() => {
 
     const size = Math.round(500 * SIZE_SCALE);
     const padding = 40;
-    const maxR = size - padding * 2;
+    const maxR = size / 2 - padding;
 
     const svg = createSVG(size, size);
     container.appendChild(svg);
 
     const color = RadarData.QUADRANT_COLORS[quadrantName];
 
-    // Draw quarter-circle rings
-    const cx = padding;
-    const cy = size - padding;
-    // Quarter arc: from top (270 deg from the right / -90) to right (0 deg)
+    // Draw section rings
+    const cx = size / 2;
+    const cy = size / 2;
+    const sectionNames = RadarData.QUADRANTS;
+    const sectionCount = sectionNames.length;
+    const sectionAngle = (Math.PI * 2) / sectionCount;
+    const baseAngle = -Math.PI / 2;
+    const sectionIndex = sectionNames.indexOf(quadrantName);
+    if (sectionIndex < 0) return;
+    const midAngle = baseAngle + sectionIndex * sectionAngle;
+    const startAngle = midAngle - sectionAngle / 2;
+    const endAngle = midAngle + sectionAngle / 2;
 
     for (let i = RING_FRACTIONS.length - 1; i >= 0; i--) {
-      const r = RING_FRACTIONS[i] * maxR;
-      const path = describeArc(cx, cy, r, -90, 0);
+      const innerR = i === 0 ? 0 : RING_FRACTIONS[i - 1] * maxR;
+      const outerR = RING_FRACTIONS[i] * maxR;
+      const path = describeRingSector(cx, cy, innerR, outerR, startAngle, endAngle);
       const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       pathEl.setAttribute('d', path + ` L ${cx} ${cy} Z`);
       pathEl.setAttribute('fill', i % 2 === 0 ? 'rgba(0,0,0,0.04)' : 'rgba(0,0,0,0.02)');
@@ -153,19 +170,20 @@ const RadarChart = (() => {
       svg.appendChild(pathEl);
     }
 
-    // Ring labels along bottom edge
+    // Ring labels along the section bisector
     const ringNames = RadarData.RINGS;
-    const ringLabelY = cy + 18;
     for (let i = 0; i < 4; i++) {
       const prevR = i === 0 ? 0 : RING_FRACTIONS[i - 1] * maxR;
       const curR = RING_FRACTIONS[i] * maxR;
       const midR = (prevR + curR) / 2;
-      text(svg, cx + midR, ringLabelY, ringNames[i], 'ring-label', 'middle');
+      const x = cx + midR * Math.cos(midAngle);
+      const y = cy + midR * Math.sin(midAngle);
+      text(svg, x, y, ringNames[i], 'ring-label', 'middle');
     }
 
-    // Axes
-    line(svg, cx, cy, cx + maxR * RING_FRACTIONS[3], cy, '#ccc', 1);
-    line(svg, cx, cy, cx, cy - maxR * RING_FRACTIONS[3], '#ccc', 1);
+    // Section boundaries
+    line(svg, cx, cy, cx + maxR * Math.cos(startAngle), cy + maxR * Math.sin(startAngle), '#ccc', 1);
+    line(svg, cx, cy, cx + maxR * Math.cos(endAngle), cy + maxR * Math.sin(endAngle), '#ccc', 1);
 
     // Quadrant title
     text(svg, cx + 8, padding - 10, quadrantName + ' >', 'quadrant-label', 'start');
@@ -181,16 +199,13 @@ const RadarChart = (() => {
 
       const innerR = ringIndex === 0 ? 0 : RING_FRACTIONS[ringIndex - 1] * maxR;
       const outerR = RING_FRACTIONS[ringIndex] * maxR;
-      const r = innerR + seededRandom(item.id * 7 + 3) * (outerR - innerR - 12) + 6;
-      const angle = -90 + seededRandom(item.id * 13 + 7) * 90; // -90 to 0 degrees
-      const rad = (angle * Math.PI) / 180;
-
+      const { x, y } = getBlipPosition(item, ringIndex, { startAngle, endAngle }, maxR, cx, cy);
       blips.push({
-        x: cx + r * Math.cos(rad),
-        y: cy + r * Math.sin(rad),
+        x,
+        y,
         item,
         ringIndex,
-        angles: { startAngle: -Math.PI / 2, endAngle: 0 },
+        angles: { startAngle, endAngle },
         maxR,
         cx,
         cy,
@@ -251,6 +266,13 @@ const RadarChart = (() => {
     t.textContent = content;
     svg.appendChild(t);
     return t;
+  }
+
+  function labelAnchorForAngle(angle) {
+    const c = Math.cos(angle);
+    if (c > 0.2) return 'start';
+    if (c < -0.2) return 'end';
+    return 'middle';
   }
 
   function createMultilineLabel(svg, x, y, lines, anchor) {
@@ -557,6 +579,27 @@ const RadarChart = (() => {
     const y2 = cy + r * Math.sin(endRad);
     const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
     return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}`;
+  }
+
+  function polarToCartesian(cx, cy, r, angle) {
+    return {
+      x: cx + r * Math.cos(angle),
+      y: cy + r * Math.sin(angle),
+    };
+  }
+
+  function describeRingSector(cx, cy, innerR, outerR, startAngle, endAngle) {
+    const largeArc = endAngle - startAngle <= Math.PI ? 0 : 1;
+    const startOuter = polarToCartesian(cx, cy, outerR, startAngle);
+    const endOuter = polarToCartesian(cx, cy, outerR, endAngle);
+
+    if (innerR <= 0) {
+      return `M ${startOuter.x} ${startOuter.y} A ${outerR} ${outerR} 0 ${largeArc} 1 ${endOuter.x} ${endOuter.y} L ${cx} ${cy} Z`;
+    }
+
+    const startInner = polarToCartesian(cx, cy, innerR, endAngle);
+    const endInner = polarToCartesian(cx, cy, innerR, startAngle);
+    return `M ${startOuter.x} ${startOuter.y} A ${outerR} ${outerR} 0 ${largeArc} 1 ${endOuter.x} ${endOuter.y} L ${startInner.x} ${startInner.y} A ${innerR} ${innerR} 0 ${largeArc} 0 ${endInner.x} ${endInner.y} Z`;
   }
 
   return { renderFull, renderQuadrant };

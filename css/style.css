@@ -6,10 +6,11 @@
 }
 
 :root {
-  --color-techniques: #3a8ea5;
-  --color-tools: #587e2e;
-  --color-platforms: #b5872a;
-  --color-languages: #8b2252;
+  --color-inference: #3a8ea5;
+  --color-finetuning: #587e2e;
+  --color-pretraining: #b5872a;
+  --color-kernel: #8b2252;
+  --color-reinforcement: #5b5db3;
   --color-adopt: rgba(0,0,0,0.08);
   --color-trial: rgba(0,0,0,0.05);
   --color-assess: rgba(0,0,0,0.03);
@@ -359,15 +360,17 @@ body {
 }
 
 /* === Quadrant Colors === */
-.q-techniques { color: var(--color-techniques); }
-.q-tools { color: var(--color-tools); }
-.q-platforms { color: var(--color-platforms); }
-.q-languages { color: var(--color-languages); }
+.q-inference { color: var(--color-inference); }
+.q-finetuning { color: var(--color-finetuning); }
+.q-pretraining { color: var(--color-pretraining); }
+.q-kernel { color: var(--color-kernel); }
+.q-reinforcement { color: var(--color-reinforcement); }
 
-.bg-techniques { background: var(--color-techniques); }
-.bg-tools { background: var(--color-tools); }
-.bg-platforms { background: var(--color-platforms); }
-.bg-languages { background: var(--color-languages); }
+.bg-inference { background: var(--color-inference); }
+.bg-finetuning { background: var(--color-finetuning); }
+.bg-pretraining { background: var(--color-pretraining); }
+.bg-kernel { background: var(--color-kernel); }
+.bg-reinforcement { background: var(--color-reinforcement); }
 
 /* === Empty State === */
 .empty-state {
