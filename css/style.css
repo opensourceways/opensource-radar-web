@@ -79,8 +79,28 @@ body {
   color: var(--color-text);
 }
 
-.upload-btn:hover, .btn-sample:hover, .btn-export:hover {
+.btn-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-text);
+}
+
+.upload-btn:hover, .btn-sample:hover, .btn-export:hover, .btn-pdf:hover {
   background: var(--color-bg);
+}
+
+.btn-pdf:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* === Main Content === */

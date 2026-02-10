@@ -19,6 +19,12 @@
         </label>
         <input type="file" id="file-input" accept=".xlsx,.xls" hidden>
         <button class="btn-export" id="btn-export-excel">Export Excel</button>
+        <button class="btn-pdf" id="btn-download-pdf">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5L9.5 0H4zm5.5 1.5L13 5h-2.5a1 1 0 0 1-1-1V1.5zM4.5 8a.5.5 0 0 1 .5.5v.634l.549-.317a.5.5 0 0 1 .5.866L5.5 10l.549.317a.5.5 0 0 1-.5.866L5 10.866V11.5a.5.5 0 0 1-1 0v-.634l-.549.317a.5.5 0 0 1-.5-.866L3.5 10l-.549-.317a.5.5 0 1 1 .5-.866l.549.317V8.5a.5.5 0 0 1 .5-.5z"/>
+          </svg>
+          Download PDF
+        </button>
         <button class="btn-sample" id="btn-load-sample">Load Sample Data</button>
       </div>
     </div>
@@ -54,6 +60,7 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="js/data.js"></script>
   <script src="js/radar.js"></script>
   <script src="js/app.js"></script>
