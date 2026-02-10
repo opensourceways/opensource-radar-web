@@ -10,6 +10,7 @@ const RadarChart = (() => {
 
   // Ring radii as fractions of the total radius (inner -> outer)
   const RING_FRACTIONS = [0.28, 0.48, 0.68, 0.88];
+  const SIZE_SCALE = 1.1;
 
   /**
    * Render full 4-quadrant radar.
@@ -28,7 +29,7 @@ const RadarChart = (() => {
   function renderFull(container, items, onQuadrantClick, onBlipClick) {
     container.innerHTML = '';
 
-    const size = Math.min(window.innerWidth - 80, 860);
+    const size = Math.round(Math.min(window.innerWidth - 80, 860) * SIZE_SCALE);
     const cx = size / 2;
     const cy = size / 2;
     const maxR = size / 2 - 30;
@@ -62,18 +63,13 @@ const RadarChart = (() => {
       { name: 'Techniques', x: 14, y: 22, anchor: 'start' },
       { name: 'Tools', x: size - 14, y: 22, anchor: 'end' },
       { name: 'Platforms', x: 14, y: size - 10, anchor: 'start' },
-      { name: 'Languages &\nFrameworks', x: size - 14, y: size - 22, anchor: 'end' },
+      { name: 'Languages & Frameworks', x: size - 14, y: size - 22, anchor: 'end' },
     ];
 
     quadLabels.forEach((ql) => {
-      const label = ql.name === 'Languages &\nFrameworks'
-        ? createMultilineLabel(svg, ql.x, ql.y, ['Languages &', 'Frameworks'], ql.anchor)
-        : text(svg, ql.x, ql.y, ql.name + ' >', 'quadrant-label', ql.anchor);
-      if (!label) return;
-
-      const actualName = ql.name === 'Languages &\nFrameworks' ? 'Languages & Frameworks' : ql.name;
+      const label = text(svg, ql.x, ql.y, ql.name + ' >', 'quadrant-label', ql.anchor);
       label.style.cursor = 'pointer';
-      label.addEventListener('click', () => onQuadrantClick(actualName));
+      label.addEventListener('click', () => onQuadrantClick(ql.name));
     });
 
     // Place blips
@@ -132,7 +128,7 @@ const RadarChart = (() => {
   function renderQuadrant(container, items, quadrantName, onBlipClick) {
     container.innerHTML = '';
 
-    const size = 500;
+    const size = Math.round(500 * SIZE_SCALE);
     const padding = 40;
     const maxR = size - padding * 2;
 
@@ -157,13 +153,14 @@ const RadarChart = (() => {
       svg.appendChild(pathEl);
     }
 
-    // Ring labels along top edge
+    // Ring labels along bottom edge
     const ringNames = RadarData.RINGS;
+    const ringLabelY = cy + 18;
     for (let i = 0; i < 4; i++) {
       const prevR = i === 0 ? 0 : RING_FRACTIONS[i - 1] * maxR;
       const curR = RING_FRACTIONS[i] * maxR;
       const midR = (prevR + curR) / 2;
-      text(svg, cx + midR, cy - maxR * RING_FRACTIONS[3] - 5, ringNames[i], 'ring-label', 'middle');
+      text(svg, cx + midR, ringLabelY, ringNames[i], 'ring-label', 'middle');
     }
 
     // Axes

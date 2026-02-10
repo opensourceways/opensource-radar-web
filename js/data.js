@@ -205,6 +205,40 @@ const RadarData = (() => {
     XLSX.writeFile(wb, 'tech-radar-sample.xlsx');
   }
 
+  /**
+   * Export the current radar data to an Excel file.
+   */
+  function exportExcel(items, filename = 'opensource-radar.xlsx') {
+    const data = Array.isArray(items) ? items : [];
+    const rows = data.map((item) => ({
+      id: item.id ?? '',
+      name: item.name ?? '',
+      quadrant: item.quadrant ?? '',
+      ring: item.ring ?? '',
+      movement: item.movement ?? '',
+      description: item.description ?? '',
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Radar');
+
+    const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([wbout], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      link.remove();
+    }, 0);
+  }
+
   return {
     QUADRANTS,
     RINGS,
@@ -213,5 +247,6 @@ const RadarData = (() => {
     parseExcel,
     getSampleData,
     generateSampleExcel,
+    exportExcel,
   };
 })();

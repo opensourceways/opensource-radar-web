@@ -18,6 +18,7 @@
   const detailList = document.getElementById('detail-list');
   const fileInput = document.getElementById('file-input');
   const btnSample = document.getElementById('btn-load-sample');
+  const btnExport = document.getElementById('btn-export-excel');
   const btnBack = document.getElementById('btn-back');
 
   // ===================== Initialization =====================
@@ -30,6 +31,7 @@
   function bindEvents() {
     fileInput.addEventListener('change', handleFileUpload);
     btnSample.addEventListener('click', handleLoadSample);
+    btnExport.addEventListener('click', handleExportExcel);
     btnBack.addEventListener('click', showRadarView);
     window.addEventListener('resize', debounce(handleResize, 250));
   }
@@ -62,6 +64,14 @@
   function handleLoadSample() {
     radarItems = RadarData.getSampleData();
     showRadarView();
+  }
+
+  function handleExportExcel() {
+    if (radarItems.length === 0) {
+      alert('No data to export yet. Load Excel or sample data first.');
+      return;
+    }
+    RadarData.exportExcel(radarItems, 'opensource-radar.xlsx');
   }
 
   // ===================== Views =====================

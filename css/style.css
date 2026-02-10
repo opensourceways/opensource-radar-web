@@ -63,7 +63,7 @@ body {
   align-items: center;
 }
 
-.upload-btn, .btn-sample {
+.upload-btn, .btn-sample, .btn-export {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -78,7 +78,7 @@ body {
   color: var(--color-text);
 }
 
-.upload-btn:hover, .btn-sample:hover {
+.upload-btn:hover, .btn-sample:hover, .btn-export:hover {
   background: var(--color-bg);
 }
 
@@ -173,7 +173,7 @@ body {
 
 /* === Quadrant Labels on Radar === */
 .quadrant-label {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
   fill: var(--color-text);
@@ -184,7 +184,7 @@ body {
 }
 
 .ring-label {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   fill: var(--color-text-light);
 }
