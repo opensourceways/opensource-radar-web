@@ -7,6 +7,7 @@
  *   quadrant  - string: "Inference" | "Finetuning" | "Pretraining" | "Kernel" | "Reinforcement Learning"
  *   ring      - string: "Adopt" | "Trial" | "Assess" | "Hold"
  *   movement  - string: "new" | "moved" | "none"
+ *   score     - number (higher is closer to center)
  *   description - string (HTML-safe text)
  */
 
@@ -45,6 +46,7 @@ const RadarData = (() => {
       quadrant:    normalizeQuadrant(String(row['quadrant'] || row['Quadrant'] || '')),
       ring:        normalizeRing(String(row['ring'] || row['Ring'] || '')),
       movement:    normalizeMovement(String(row['movement'] || row['Movement'] || 'none')),
+      score:       row['score'],
       description: String(row['description'] || row['Description'] || ''),
     })).filter(item => item.name && item.quadrant && item.ring);
   }
@@ -198,7 +200,8 @@ const RadarData = (() => {
     return data.map((item) => {
       const id = Number(item.id) || 0;
       const index = ((id - 1) % QUADRANTS.length + QUADRANTS.length) % QUADRANTS.length;
-      return { ...item, quadrant: QUADRANTS[index] };
+      const score = item.score;
+      return { ...item, quadrant: QUADRANTS[index], score };
     });
   }
 
@@ -224,6 +227,7 @@ const RadarData = (() => {
       quadrant: item.quadrant ?? '',
       ring: item.ring ?? '',
       movement: item.movement ?? '',
+      score: item.score ?? '',
       description: item.description ?? '',
     }));
 

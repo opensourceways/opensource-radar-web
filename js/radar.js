@@ -136,7 +136,7 @@ const RadarChart = (() => {
   function renderQuadrant(container, items, quadrantName, onBlipClick) {
     container.innerHTML = '';
 
-    const size = Math.round(500 * SIZE_SCALE);
+    const size = Math.round(700 * SIZE_SCALE);
     const padding = 40;
     const maxR = size / 2 - padding;
 
@@ -296,7 +296,11 @@ const RadarChart = (() => {
     const innerR = ringIndex === 0 ? 0 : RING_FRACTIONS[ringIndex - 1] * maxR;
     const outerR = RING_FRACTIONS[ringIndex] * maxR;
     const margin = 14;
-    const r = innerR + margin + seededRandom(item.id * 7 + 3) * (outerR - innerR - margin * 2);
+    const score = typeof item.score === 'number' ? item.score : 0.5;
+    const clampedScore = Math.min(Math.max(score, 0), 1);
+    const range = outerR - innerR - margin * 2;
+    const jitter = seededRandom(item.id * 7 + 3) * 0.08 * range;
+    const r = innerR + margin + (1 - clampedScore) * range + jitter;
     const anglePad = 0.15; // generous padding off the axis lines
     const angleRange = angles.endAngle - angles.startAngle - anglePad * 2;
     const angle = angles.startAngle + anglePad + seededRandom(item.id * 13 + 7) * angleRange;
