@@ -40,25 +40,21 @@
 
   // ===================== File Upload =====================
 
-  function handleFileUpload(e) {
+  async function handleFileUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function (evt) {
-      try {
-        radarItems = RadarData.parseExcel(evt.target.result);
-        if (radarItems.length === 0) {
-          alert('No valid radar items found in the Excel file. Please check the format.');
-          return;
-        }
-        showRadarView();
-      } catch (err) {
-        alert('Error parsing Excel file: ' + err.message);
-        console.error(err);
+    try {
+      radarItems = await RadarData.parseFile(file);
+      if (radarItems.length === 0) {
+        alert('No valid radar items found in the file. Please check the format.');
+        return;
       }
-    };
-    reader.readAsArrayBuffer(file);
+      showRadarView();
+    } catch (err) {
+      alert('Error parsing file: ' + err.message);
+      console.error(err);
+    }
     // Reset so same file can be re-uploaded
     fileInput.value = '';
   }

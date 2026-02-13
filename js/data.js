@@ -40,7 +40,7 @@ const RadarData = (() => {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(sheet);
 
-    return rows.map((row) => ({
+    const items = rows.map((row) => ({
       id:          Number(row['id'] || row['ID'] || row['Id'] || 0),
       name:        String(row['name'] || row['Name'] || ''),
       quadrant:    normalizeQuadrant(String(row['quadrant'] || row['Quadrant'] || '')),
@@ -49,6 +49,117 @@ const RadarData = (() => {
       score:       row['score'],
       description: String(row['description'] || row['Description'] || ''),
     })).filter(item => item.name && item.quadrant && item.ring);
+
+    return assignIds(items);
+  }
+
+  function assignIds(items) {
+    const hasAnyId = items.some(item => Number(item.id) > 0);
+
+    if (!hasAnyId) {
+      return items.map((item, index) => ({ ...item, id: index + 1 }));
+    }
+
+    let maxId = Math.max(0, ...items.map(item => Number(item.id) || 0));
+    return items.map((item) => {
+      const currentId = Number(item.id) || 0;
+      if (currentId > 0) return item;
+      maxId += 1;
+      return { ...item, id: maxId };
+    });
+  }
+
+  function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (inQuotes) {
+        if (char === '"') {
+          if (i + 1 < line.length && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          current += char;
+        }
+      } else if (char === '"') {
+        inQuotes = true;
+      } else if (char === ',') {
+        result.push(current);
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+
+    result.push(current);
+    return result;
+  }
+
+  function parseCSV(csvText) {
+    const lines = csvText
+      .split(/\r?\n/)
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    if (lines.length < 2) return [];
+
+    const headers = parseCSVLine(lines[0]).map(h => h.trim());
+    const rows = lines.slice(1).map((line) => {
+      const values = parseCSVLine(line);
+      const row = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] !== undefined ? values[index].trim() : '';
+      });
+      return row;
+    });
+
+    const items = rows.map((row) => ({
+      id:          Number(row['id'] || row['ID'] || row['Id'] || 0),
+      name:        String(row['name'] || row['Name'] || ''),
+      quadrant:    normalizeQuadrant(String(row['quadrant'] || row['Quadrant'] || '')),
+      ring:        normalizeRing(String(row['ring'] || row['Ring'] || '')),
+      movement:    normalizeMovement(String(row['movement'] || row['Movement'] || 'none')),
+      score:       row['score'] || row['Score'],
+      description: String(row['description'] || row['Description'] || ''),
+    })).filter(item => item.name && item.quadrant && item.ring);
+
+    return assignIds(items);
+  }
+
+  function parseFile(file) {
+    return new Promise((resolve, reject) => {
+      const fileName = (file?.name || '').toLowerCase();
+      const reader = new FileReader();
+
+      if (fileName.endsWith('.csv')) {
+        reader.onload = (evt) => {
+          try {
+            resolve(parseCSV(String(evt.target.result || '')));
+          } catch (err) {
+            reject(new Error('Failed to parse CSV file: ' + err.message));
+          }
+        };
+        reader.onerror = () => reject(new Error('Failed to read CSV file'));
+        reader.readAsText(file);
+        return;
+      }
+
+      reader.onload = (evt) => {
+        try {
+          resolve(parseExcel(evt.target.result));
+        } catch (err) {
+          reject(new Error('Failed to parse Excel file: ' + err.message));
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read Excel file'));
+      reader.readAsArrayBuffer(file);
+    });
   }
 
   function normalizeQuadrant(q) {
@@ -257,6 +368,8 @@ const RadarData = (() => {
     QUADRANT_COLORS,
     QUADRANT_KEYS,
     parseExcel,
+    parseCSV,
+    parseFile,
     getSampleData,
     generateSampleExcel,
     exportExcel,
