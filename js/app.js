@@ -166,16 +166,15 @@
             <span class="item-card-name">
               <span class="item-number bg-${colorKey}">${item.id}</span>
               ${escapeHtml(item.name)}
+              <span class="item-score">(score: ${escapeHtml(formatScore(item.score))})</span>
               ${movementIndicator(item.movement)}
             </span>
-            <span class="item-expand-icon">&#8964;</span>
           </div>
-          <div class="item-description">${escapeHtml(item.description)}</div>
+          <div class="item-description">
+            ${escapeHtml(item.description || '')}
+            <div class="item-community-update"><strong>Community update:</strong> ${escapeHtml(item.communityUpdate || '')}</div>
+          </div>
         `;
-
-        card.addEventListener('click', () => {
-          card.classList.toggle('expanded');
-        });
 
         section.appendChild(card);
       });
@@ -187,9 +186,6 @@
   function expandItem(id) {
     const card = detailList.querySelector(`[data-item-id="${id}"]`);
     if (card) {
-      // Collapse all others
-      detailList.querySelectorAll('.item-card.expanded').forEach(c => c.classList.remove('expanded'));
-      card.classList.add('expanded');
       card.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
@@ -421,6 +417,11 @@
       return '<span class="movement-indicator" title="Moved in/out">&#9654;</span>'; // triangle right
     }
     return '';
+  }
+
+  function formatScore(score) {
+    const numeric = Number(score);
+    return Number.isFinite(numeric) ? numeric.toFixed(2) : 'N/A';
   }
 
   function escapeHtml(str) {

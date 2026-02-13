@@ -310,12 +310,7 @@ body {
 .item-card {
   border-bottom: 1px solid var(--color-border);
   padding: 12px 0;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.item-card:hover {
-  background: rgba(0,0,0,0.02);
+  cursor: default;
 }
 
 .item-card-header {
@@ -332,6 +327,12 @@ body {
   gap: 8px;
 }
 
+.item-score {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--color-text-light);
+}
+
 .item-number {
   display: inline-flex;
   align-items: center;
@@ -346,6 +347,7 @@ body {
 }
 
 .item-expand-icon {
+  display: none;
   font-size: 18px;
   color: var(--color-text-light);
   transition: transform 0.2s;
@@ -357,7 +359,7 @@ body {
 }
 
 .item-description {
-  display: none;
+  display: block;
   margin-top: 12px;
   padding: 12px 16px;
   font-size: 14px;
@@ -367,8 +369,8 @@ body {
   border-radius: 4px;
 }
 
-.item-card.expanded .item-description {
-  display: block;
+.item-community-update {
+  margin-top: 10px;
 }
 
 /* === Movement indicator === */

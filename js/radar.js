@@ -144,76 +144,50 @@ const RadarChart = (() => {
     container.appendChild(svg);
 
     const color = RadarData.QUADRANT_COLORS[quadrantName];
-
-    // Draw section rings
     const cx = size / 2;
     const cy = size / 2;
-    const sectionNames = RadarData.QUADRANTS;
-    const sectionCount = sectionNames.length;
-    const sectionAngle = (Math.PI * 2) / sectionCount;
-    const baseAngle = -Math.PI / 2;
-    const sectionIndex = sectionNames.indexOf(quadrantName);
-    if (sectionIndex < 0) return;
-    const midAngle = baseAngle + sectionIndex * sectionAngle;
-    const startAngle = midAngle - sectionAngle / 2;
-    const endAngle = midAngle + sectionAngle / 2;
 
-    for (let i = RING_FRACTIONS.length - 1; i >= 0; i--) {
-      const innerR = i === 0 ? 0 : RING_FRACTIONS[i - 1] * maxR;
-      const outerR = RING_FRACTIONS[i] * maxR;
-      const path = describeRingSector(cx, cy, innerR, outerR, startAngle, endAngle);
-      const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      pathEl.setAttribute('d', path + ` L ${cx} ${cy} Z`);
-      pathEl.setAttribute('fill', i % 2 === 0 ? 'rgba(0,0,0,0.04)' : 'rgba(0,0,0,0.02)');
-      pathEl.setAttribute('stroke', '#ddd');
-      pathEl.setAttribute('stroke-width', '0.5');
-      svg.appendChild(pathEl);
-    }
+    // Draw full rings
+    drawRings(svg, cx, cy, maxR, true);
 
-    // Ring labels along the section bisector
+    // Ring labels on horizontal axis (both sides)
     const ringNames = RadarData.RINGS;
     for (let i = 0; i < 4; i++) {
       const prevR = i === 0 ? 0 : RING_FRACTIONS[i - 1] * maxR;
       const curR = RING_FRACTIONS[i] * maxR;
       const midR = (prevR + curR) / 2;
-      const x = cx + midR * Math.cos(midAngle);
-      const y = cy + midR * Math.sin(midAngle);
-      text(svg, x, y, ringNames[i], 'ring-label', 'middle');
+      text(svg, cx + midR, cy + 4, ringNames[i], 'ring-label', 'middle');
+      text(svg, cx - midR, cy + 4, ringNames[i], 'ring-label', 'middle');
     }
 
-    // Section boundaries
-    line(svg, cx, cy, cx + maxR * Math.cos(startAngle), cy + maxR * Math.sin(startAngle), '#ccc', 1);
-    line(svg, cx, cy, cx + maxR * Math.cos(endAngle), cy + maxR * Math.sin(endAngle), '#ccc', 1);
-
     // Quadrant title
-    text(svg, cx + 8, padding - 10, quadrantName + ' >', 'quadrant-label', 'start');
+    text(svg, cx, padding - 10, quadrantName, 'quadrant-label', 'middle');
 
-    // Place blips in this quarter
+    // Place blips in full ring space
     const tooltip = createTooltip(container);
 
     const blips = [];
+    const fullAngles = { startAngle: -Math.PI, endAngle: Math.PI };
 
     items.forEach((item) => {
       const ringIndex = RadarData.RINGS.indexOf(item.ring);
       if (ringIndex < 0) return;
 
-      const innerR = ringIndex === 0 ? 0 : RING_FRACTIONS[ringIndex - 1] * maxR;
-      const outerR = RING_FRACTIONS[ringIndex] * maxR;
-      const { x, y } = getBlipPosition(item, ringIndex, { startAngle, endAngle }, maxR, cx, cy);
+      const { x, y } = getBlipPosition(item, ringIndex, fullAngles, maxR, cx, cy);
       blips.push({
         x,
         y,
         item,
         ringIndex,
-        angles: { startAngle, endAngle },
+        angles: fullAngles,
         maxR,
         cx,
         cy,
-        color,
+        color: getDetailRingColor(item.ring, color),
       });
     });
 
-    resolveCollisions(blips);
+    resolveCollisionsFullCircle(blips);
 
     blips.forEach((b) => {
       drawBlip(svg, b.x, b.y, b.item, b.color, tooltip, onBlipClick);
@@ -371,6 +345,84 @@ const RadarChart = (() => {
     });
   }
 
+  function resolveCollisionsFullCircle(blips) {
+    const minDist = 26;
+    const iterations = 150;
+    const step = 0.35;
+    const damping = 0.85;
+    const jitter = 1.2;
+
+    blips.forEach((b) => {
+      b.vx = 0;
+      b.vy = 0;
+    });
+
+    for (let iter = 0; iter < iterations; iter++) {
+      for (let i = 0; i < blips.length; i++) {
+        for (let j = i + 1; j < blips.length; j++) {
+          const a = blips[i];
+          const b = blips[j];
+          let dx = b.x - a.x;
+          let dy = b.y - a.y;
+          let dist = Math.hypot(dx, dy);
+          if (dist === 0) {
+            const angle = seededRandom(i * 17 + j * 31) * Math.PI * 2;
+            dx = Math.cos(angle) * 0.1;
+            dy = Math.sin(angle) * 0.1;
+            dist = Math.hypot(dx, dy);
+          }
+          if (dist < minDist) {
+            const overlap = minDist - dist;
+            const ux = dx / dist;
+            const uy = dy / dist;
+            const force = overlap * 0.5;
+            a.vx -= ux * force;
+            a.vy -= uy * force;
+            b.vx += ux * force;
+            b.vy += uy * force;
+          }
+        }
+      }
+
+      blips.forEach((b, idx) => {
+        b.vx += (seededRandom(iter * 113 + idx * 7) - 0.5) * jitter;
+        b.vy += (seededRandom(iter * 131 + idx * 11) - 0.5) * jitter;
+
+        b.x += b.vx * step;
+        b.y += b.vy * step;
+        b.vx *= damping;
+        b.vy *= damping;
+
+        clampToRing(b);
+      });
+    }
+
+    blips.forEach((b) => {
+      delete b.vx;
+      delete b.vy;
+    });
+  }
+
+  function clampToRing(blip) {
+    const { cx, cy, ringIndex, maxR } = blip;
+    const innerR = ringIndex === 0 ? 0 : RING_FRACTIONS[ringIndex - 1] * maxR;
+    const outerR = RING_FRACTIONS[ringIndex] * maxR;
+    const margin = 14;
+
+    const dx = blip.x - cx;
+    const dy = blip.y - cy;
+    let r = Math.hypot(dx, dy);
+    const angle = Math.atan2(dy, dx);
+
+    const minR = innerR + margin;
+    const maxRadius = outerR - margin;
+    if (r < minR) r = minR;
+    if (r > maxRadius) r = maxRadius;
+
+    blip.x = cx + r * Math.cos(angle);
+    blip.y = cy + r * Math.sin(angle);
+  }
+
   function clampToSector(blip) {
     const { cx, cy, ringIndex, maxR } = blip;
     let start = blip.angles.startAngle;
@@ -521,7 +573,8 @@ const RadarChart = (() => {
 
     // Tooltip events
     g.addEventListener('mouseenter', (e) => {
-      showTooltip(tooltip, item.name, e);
+      const scoreText = formatScore(item.score);
+      showTooltip(tooltip, `${item.name} · Score: ${scoreText}`, e);
     });
     g.addEventListener('mousemove', (e) => {
       moveTooltip(tooltip, e);
@@ -552,6 +605,21 @@ const RadarChart = (() => {
     tip.textContent = text;
     tip.classList.add('visible');
     moveTooltip(tip, e);
+  }
+
+  function formatScore(value) {
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric.toFixed(2) : 'N/A';
+  }
+
+  function getDetailRingColor(ringName, fallbackColor) {
+    const ringColors = {
+      Adopt: '#c76b9f',
+      Trial: '#5abe91',
+      Assess: '#e0c57f',
+      Hold: '#b0acaa',
+    };
+    return ringColors[ringName] || fallbackColor;
   }
 
   function moveTooltip(tip, e) {

@@ -9,6 +9,7 @@
  *   movement  - string: "new" | "moved" | "none"
  *   score     - number (higher is closer to center)
  *   description - string (HTML-safe text)
+ *   community update - string (community notes)
  */
 
 const RadarData = (() => {
@@ -48,25 +49,80 @@ const RadarData = (() => {
       movement:    normalizeMovement(String(row['movement'] || row['Movement'] || 'none')),
       score:       row['score'],
       description: String(row['description'] || row['Description'] || ''),
+      communityUpdate: String(
+        row['community update'] ||
+        row['Community Update'] ||
+        row['community_update'] ||
+        row['communityUpdate'] ||
+        ''
+      ),
     })).filter(item => item.name && item.quadrant && item.ring);
 
     return assignIds(items);
   }
 
   function assignIds(items) {
+    const toScore = (value) => {
+      const num = Number(value);
+      return Number.isFinite(num) ? num : Number.NEGATIVE_INFINITY;
+    };
+
+    const sortByScoreDesc = (a, b) => {
+      const scoreDiff = toScore(b.item.score) - toScore(a.item.score);
+      if (scoreDiff !== 0) return scoreDiff;
+      return a.index - b.index;
+    };
+
     const hasAnyId = items.some(item => Number(item.id) > 0);
 
     if (!hasAnyId) {
-      return items.map((item, index) => ({ ...item, id: index + 1 }));
+      const grouped = {};
+      items.forEach((item, index) => {
+        const key = item.quadrant || '__default__';
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push({ item, index });
+      });
+
+      const result = new Array(items.length);
+      Object.values(grouped).forEach((group) => {
+        group.sort(sortByScoreDesc);
+        group.forEach((entry, rank) => {
+          result[entry.index] = { ...entry.item, id: rank + 1 };
+        });
+      });
+
+      return result;
     }
 
-    let maxId = Math.max(0, ...items.map(item => Number(item.id) || 0));
-    return items.map((item) => {
+    const result = items.map(item => ({ ...item }));
+    const maxIdByQuadrant = {};
+
+    result.forEach((item) => {
       const currentId = Number(item.id) || 0;
-      if (currentId > 0) return item;
-      maxId += 1;
-      return { ...item, id: maxId };
+      if (currentId <= 0) return;
+      const key = item.quadrant || '__default__';
+      maxIdByQuadrant[key] = Math.max(maxIdByQuadrant[key] || 0, currentId);
     });
+
+    const missingByQuadrant = {};
+    result.forEach((item, index) => {
+      const currentId = Number(item.id) || 0;
+      if (currentId > 0) return;
+      const key = item.quadrant || '__default__';
+      if (!missingByQuadrant[key]) missingByQuadrant[key] = [];
+      missingByQuadrant[key].push({ item, index });
+    });
+
+    Object.entries(missingByQuadrant).forEach(([key, group]) => {
+      group.sort(sortByScoreDesc);
+      let nextId = (maxIdByQuadrant[key] || 0) + 1;
+      group.forEach((entry) => {
+        result[entry.index].id = nextId;
+        nextId += 1;
+      });
+    });
+
+    return result;
   }
 
   function parseCSVLine(line) {
@@ -127,6 +183,13 @@ const RadarData = (() => {
       movement:    normalizeMovement(String(row['movement'] || row['Movement'] || 'none')),
       score:       row['score'] || row['Score'],
       description: String(row['description'] || row['Description'] || ''),
+      communityUpdate: String(
+        row['community update'] ||
+        row['Community Update'] ||
+        row['community_update'] ||
+        row['communityUpdate'] ||
+        ''
+      ),
     })).filter(item => item.name && item.quadrant && item.ring);
 
     return assignIds(items);
@@ -163,8 +226,25 @@ const RadarData = (() => {
   }
 
   function normalizeQuadrant(q) {
-    const lower = q.toLowerCase().trim();
-    return QUADRANTS.find(qn => qn.toLowerCase() === lower) || q;
+    const value = String(q || '').trim();
+    if (!value) return value;
+
+    const lower = value.toLowerCase();
+    const direct = QUADRANTS.find(qn => qn.toLowerCase() === lower);
+    if (direct) return direct;
+
+    const normalized = lower.replace(/[\s_-]+/g, '');
+    const aliases = {
+      kernel: 'Kernel',
+      kernels: 'Kernel',
+      finetune: 'Finetuning',
+      finetuning: 'Finetuning',
+      pretraining: 'Pretraining',
+      inference: 'Inference',
+      rl: 'Reinforcement Learning',
+    };
+
+    return aliases[normalized] || value;
   }
 
   function normalizeRing(r) {
@@ -340,6 +420,7 @@ const RadarData = (() => {
       movement: item.movement ?? '',
       score: item.score ?? '',
       description: item.description ?? '',
+      'community update': item.communityUpdate ?? '',
     }));
 
     const ws = XLSX.utils.json_to_sheet(rows);
