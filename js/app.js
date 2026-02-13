@@ -9,6 +9,7 @@
   let radarItems = [];
   let currentView = 'radar'; // 'radar' | 'detail'
   let currentQuadrant = null;
+  let detailSyncCleanup = null;
 
   // DOM refs
   const viewRadar = document.getElementById('view-radar');
@@ -176,18 +177,109 @@
           </div>
         `;
 
+        card.addEventListener('mouseenter', () => setActiveDetailItem(item.id));
+        card.addEventListener('click', () => setActiveDetailItem(item.id));
+
         section.appendChild(card);
       });
 
       detailList.appendChild(section);
     });
+
+    bindDetailScrollSync();
   }
 
   function expandItem(id) {
     const card = detailList.querySelector(`[data-item-id="${id}"]`);
     if (card) {
+      setActiveDetailItem(id);
       card.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+  }
+
+  function setActiveDetailItem(id) {
+    const targetId = String(id);
+
+    detailList.querySelectorAll('.item-card').forEach((card) => {
+      const isTarget = card.getAttribute('data-item-id') === targetId;
+      card.classList.toggle('is-active', isTarget);
+    });
+
+    detailRadarContainer.querySelectorAll('.blip').forEach((blip) => {
+      const isTarget = blip.getAttribute('data-item-id') === targetId;
+      blip.classList.toggle('is-active', isTarget);
+    });
+  }
+
+  function bindDetailScrollSync() {
+    if (detailSyncCleanup) detailSyncCleanup();
+
+    const cards = Array.from(detailList.querySelectorAll('.item-card'));
+    if (!cards.length) return;
+
+    const syncByViewportCenter = () => {
+      const viewportCenter = window.innerHeight * 0.5;
+      const activeBand = window.innerHeight * 0.2;
+
+      let bestCard = null;
+      let bestDistance = Infinity;
+
+      cards.forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+
+        const center = rect.top + rect.height / 2;
+        const distance = Math.abs(center - viewportCenter);
+        if (distance > activeBand) return;
+
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          bestCard = card;
+        }
+      });
+
+      if (!bestCard) {
+        cards.forEach((card) => {
+          const rect = card.getBoundingClientRect();
+          if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+          const center = rect.top + rect.height / 2;
+          const distance = Math.abs(center - viewportCenter);
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            bestCard = card;
+          }
+        });
+      }
+
+      if (bestCard) {
+        const id = bestCard.getAttribute('data-item-id');
+        if (id) setActiveDetailItem(id);
+      }
+    };
+
+    let rafId = 0;
+    const onScrollOrResize = () => {
+      if (rafId) return;
+      rafId = window.requestAnimationFrame(() => {
+        rafId = 0;
+        syncByViewportCenter();
+      });
+    };
+
+    window.addEventListener('scroll', onScrollOrResize, { passive: true });
+    window.addEventListener('resize', onScrollOrResize);
+
+    detailSyncCleanup = () => {
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+      window.removeEventListener('scroll', onScrollOrResize);
+      window.removeEventListener('resize', onScrollOrResize);
+      detailSyncCleanup = null;
+    };
+
+    syncByViewportCenter();
   }
 
   // ===================== PDF Generation =====================

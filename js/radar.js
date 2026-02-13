@@ -528,6 +528,7 @@ const RadarChart = (() => {
     const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     g.setAttribute('class', 'blip');
     g.setAttribute('transform', `translate(${x}, ${y})`);
+    g.setAttribute('data-item-id', item.id);
 
     // Keep visuals in an inner group so hover scaling doesn't move the translated position
     const content = document.createElementNS('http://www.w3.org/2000/svg', 'g');

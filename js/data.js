@@ -33,6 +33,31 @@ const RadarData = (() => {
     'Reinforcement Learning':   'reinforcement',
   };
 
+  function normalizeFieldName(name) {
+    return String(name || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[\s_-]+/g, '');
+  }
+
+  function getRowValue(row, candidates, fallback = '') {
+    if (!row || typeof row !== 'object') return fallback;
+
+    for (const key of candidates) {
+      if (Object.prototype.hasOwnProperty.call(row, key) && row[key] !== undefined && row[key] !== null && row[key] !== '') {
+        return row[key];
+      }
+    }
+
+    const normalizedCandidates = new Set(candidates.map(normalizeFieldName));
+    for (const [rawKey, value] of Object.entries(row)) {
+      if (!normalizedCandidates.has(normalizeFieldName(rawKey))) continue;
+      if (value !== undefined && value !== null && value !== '') return value;
+    }
+
+    return fallback;
+  }
+
   /**
    * Parse an ArrayBuffer (from file input) into radar items.
    */
@@ -42,20 +67,14 @@ const RadarData = (() => {
     const rows = XLSX.utils.sheet_to_json(sheet);
 
     const items = rows.map((row) => ({
-      id:          Number(row['id'] || row['ID'] || row['Id'] || 0),
-      name:        String(row['name'] || row['Name'] || ''),
-      quadrant:    normalizeQuadrant(String(row['quadrant'] || row['Quadrant'] || '')),
-      ring:        normalizeRing(String(row['ring'] || row['Ring'] || '')),
-      movement:    normalizeMovement(String(row['movement'] || row['Movement'] || 'none')),
-      score:       row['score'],
-      description: String(row['description'] || row['Description'] || ''),
-      communityUpdate: String(
-        row['community update'] ||
-        row['Community Update'] ||
-        row['community_update'] ||
-        row['communityUpdate'] ||
-        ''
-      ),
+      id:          Number(getRowValue(row, ['id', 'ID', 'Id'], 0)),
+      name:        String(getRowValue(row, ['name', 'Name'], '')),
+      quadrant:    normalizeQuadrant(String(getRowValue(row, ['quadrant', 'Quadrant'], ''))),
+      ring:        normalizeRing(String(getRowValue(row, ['ring', 'Ring'], ''))),
+      movement:    normalizeMovement(String(getRowValue(row, ['movement', 'Movement'], 'none'))),
+      score:       getRowValue(row, ['score', 'Score'], ''),
+      description: String(getRowValue(row, ['description', 'Description', 'descripton'], '')),
+      communityUpdate: String(getRowValue(row, ['community update', 'Community Update', 'community_update', 'communityUpdate', 'community updates', 'Community Updates'], '')),
     })).filter(item => item.name && item.quadrant && item.ring);
 
     return assignIds(items);
@@ -176,20 +195,14 @@ const RadarData = (() => {
     });
 
     const items = rows.map((row) => ({
-      id:          Number(row['id'] || row['ID'] || row['Id'] || 0),
-      name:        String(row['name'] || row['Name'] || ''),
-      quadrant:    normalizeQuadrant(String(row['quadrant'] || row['Quadrant'] || '')),
-      ring:        normalizeRing(String(row['ring'] || row['Ring'] || '')),
-      movement:    normalizeMovement(String(row['movement'] || row['Movement'] || 'none')),
-      score:       row['score'] || row['Score'],
-      description: String(row['description'] || row['Description'] || ''),
-      communityUpdate: String(
-        row['community update'] ||
-        row['Community Update'] ||
-        row['community_update'] ||
-        row['communityUpdate'] ||
-        ''
-      ),
+      id:          Number(getRowValue(row, ['id', 'ID', 'Id'], 0)),
+      name:        String(getRowValue(row, ['name', 'Name'], '')),
+      quadrant:    normalizeQuadrant(String(getRowValue(row, ['quadrant', 'Quadrant'], ''))),
+      ring:        normalizeRing(String(getRowValue(row, ['ring', 'Ring'], ''))),
+      movement:    normalizeMovement(String(getRowValue(row, ['movement', 'Movement'], 'none'))),
+      score:       getRowValue(row, ['score', 'Score'], ''),
+      description: String(getRowValue(row, ['description', 'Description', 'descripton'], '')),
+      communityUpdate: String(getRowValue(row, ['community update', 'Community Update', 'community_update', 'communityUpdate', 'community updates', 'Community Updates'], '')),
     })).filter(item => item.name && item.quadrant && item.ring);
 
     return assignIds(items);

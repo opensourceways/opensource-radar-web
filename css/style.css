@@ -225,6 +225,10 @@ body {
   transform: scale(1.2);
 }
 
+.blip.is-active .blip-content {
+  transform: scale(1.6);
+}
+
 .blip-number {
   font-size: 9px;
   font-weight: 700;
@@ -311,6 +315,10 @@ body {
   border-bottom: 1px solid var(--color-border);
   padding: 12px 0;
   cursor: default;
+}
+
+.item-card.is-active {
+  background: rgba(0,0,0,0.04);
 }
 
 .item-card-header {
