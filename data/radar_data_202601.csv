@@ -1,0 +1,113 @@
+name,quadrant,ring,score,description,community update
+AI4Finance-Foundation/ElegantRL,RL,Assess,0.6051047158710686,,
+ByteDance-Seed/Triton-distributed,Kernels,Assess,0.2928029311236494,字节跳动推出的基于 Triton 的分布式训练通信扩展，支持多厂商硬件环境（如 AMD ROCm），旨在提升分布式计算的兼容性。,2026 年 1 月，ByteDance-Seed/Triton-distributed 项目在社区活跃度上保持稳定，核心进展集中于对 AMD GPU 生态的扩展。本月最关键的事件是 PR #145 的更新，该项目正式引入 mori-shmem 通信后端，标志着项目从 NVIDIA CUDA 专属生态向异构硬件（ROCm）迈出实质性一步，为未来支持更多国产加速卡奠定技术基础。虽然未发布新版本，但持续的代码更新（如 PR #138 对 METAX 后端的维护）表明项目仍在积极迭代。开源社区的 Issue 反馈（如二维码过期）显示其已形成一定用户基础，但尚无公开的官方技术博客、会议分享或路线图更新，社区透明度仍有提升空间。整体而言，本月项目以“底层通信层扩展”为核心，技术方向明确，聚焦于提升分布式训练在多厂商硬件环境中的兼容性，符合当前国产 AI 硬件生态发展的战略趋势。
+DLR-RM/stable-baselines3,RL,Assess,0.9093802838495544,,
+Dao-AILab/flash-attention,Pretraining,Trial,0.7599727414274111,,
+FlagTree/flagtree,Kernels,Assess,0.4677634746162087,智源研究院（FlagAI）开发的统一 AI 编译框架，作为一个 Triton 衍生项目，专注于算子统一表达和对国产 AI 芯片的广泛支持。,2026 年 1 月，FlagTree 项目迎来关键性里程碑，正式发布 v0.4.0 版本，标志着其从“Triton 衍生编译器”向“自主可控的统一 AI 编译框架”迈出坚实一步。该版本不仅通过新增 TLE/TLE-Raw 支持，显著增强了对底层算子的自定义能力，还同步完善了关键后端（Ascend、Sunrise）的文档与配置修复，极大提升了开发者体验。GitHub 活动显示，团队在本月共关闭 10 个高质量 PR 和 1 个关键特性请求（Issue #212），体现出高效、协作的开发节奏。PR 内容覆盖文档规范、编译器稳定性、后端适配、接口重构等多个维度，表明项目正从快速原型阶段进入系统性优化期。尽管缺少外部媒体报道，但通过 Wiki 更新与版本发布，项目已构建起清晰的技术叙事。未来趋势明确：以 EDSL 为核心实现算子统一表达，逐步摆脱对 Triton 内部实现的依赖，为支持更多国产 AI 芯片提供可扩展架构。整体而言，FlagTree 在 2026-01 展现出成熟、稳健、面向生态的社区发展态势。
+InternLM/InternEvo,Pretraining,Assess,0.23662968951688407,,
+InternLM/lmdeploy,inference,Trial,0.675598359571202,,
+InternLM/xtuner,finetune,Assess,0.5472986816797712,,
+LMCache/LMCache,inference,Assess,0.838161930510553,,
+ModelEngine-Group/fit-framework,AIAgent,Assess,1.0600879335613091,,
+NVIDIA-NeMo/RL,RL,Assess,0.7821365022411715,,
+NVIDIA/Megatron-LM,Pretraining,Assess,0.9224135028513799,,
+NVIDIA/TensorRT-LLM,inference,Assess,1.3898944942597873,,
+NVIDIA/cutile-python,Kernels,Assess,0.23413510101598536,NVIDIA 推出的 Python 库，旨在将复杂的 CUDA 编程抽象为类 NumPy 的简单语法，降低高性能计算的门槛，被定位为下一代 GPU 编程标准。,2026年1月，NVIDIA/cutile-python 仓库虽未发布新版本，但社区活动异常活跃，整体呈现“生态推广主导、功能持续演进”的特征。核心进展体现在两个层面：一是技术层面，PR #52 引入对 FlashAttention 后向传播的支持，显著拓展了其在大模型训练中的应用潜力；二是生态层面，NVIDIA 通过官方博客、GTC 2026 会议预热及 MEXC 性能指南，密集推广 cuTILE 在 Blackwell 架构上的卓越性能，将其定位为下一代 GPU 编程标准。与此同时，社区反馈的 bug（如 DLL 加载失败、版本号错误）表明该工具正从实验性项目向生产级库过渡，稳定性需求上升。综合来看，cuTILE Python 已从技术原型进入规模化应用推广阶段，其核心价值在于将复杂 CUDA 编程抽象为类似 NumPy 的 Python 语法，极大降低高性能计算门槛。未来趋势将围绕“CUDA 本体 Python化”深化，与 Triton、Torch.compile 等生态协同，成为 NVIDIA 在 AI 框架层面的核心竞争力之一。
+NVlabs/Fast-dLLM,inference,Assess,0.29492406558664336,,
+NovaSky-AI/SkyRL,RL,Assess,0.7293729732139761,,
+OpenBMB/BMTrain,Pretraining,Assess,0.2681227656023861,,
+OpenPipe/ART,RL,Assess,0.872973902985782,,
+OpenRLHF/OpenRLHF,RL,Trial,1.0890131645811678,,
+PaddlePaddle/PaddleNLP,finetune,Trial,0.8022745868690588,,
+PeterGriffinJin/Search-R1,RL,Assess,0.26220123491455716,,
+PrimeIntellect-ai/verifiers,RL,Assess,0.7402277364846188,,
+RLinf/RLinf,RL,Assess,0.6371149534934684,,
+THUDM/slime,RL,Trial,1.002554001048043,,
+Tencent/KsanaLLM,inference,Assess,0.15940204852183557,,
+agentica-project/rllm,RL,Assess,0.4269521932979804,,
+ai-dynamo/dynamo,inference,Assess,0.9262857597656322,,
+alibaba/ChatLearn,RL,Assess,0.21466940441475474,,
+alibaba/MNN,inference,Assess,0.7595802273701622,,
+alibaba/ROLL,RL,Trial,0.5978208070967972,,
+alibaba/RecIS,Pretraining,Assess,0.22108281144878017,,
+alibaba/rtp-llm,inference,Assess,0.5656484295320124,,
+apache/tvm,Kernels,Assess,1.6804089321148639,一个开源的端到端深度学习编译器栈，用于将 AI 模型高效部署到各种硬件后端，包括 CPU、GPU 和专用加速器。,在 2026-01 期间，Apache TVM 社区展现出稳健的技术迭代节奏，虽未发布新版本，但核心开发活动集中于功能增强与稳定性优化。多个关键 Pull Request 在此月被合并，包括对 ONNX 前端 LRN 算子的支持、NMS 动态输出裁剪的实现，以及对 NVSHMEM 等高性能计算组件的集成，显著提升了 TVM 在主流深度学习模型部署场景中的兼容性与性能表现。同时，团队积极修复了 TIR 层的段错误和内存规划缺陷，强化了底层编译引擎的鲁棒性。Web 和 FFI 层的多处修复表明 TVM 正在深化其在浏览器和轻量级嵌入式部署中的能力。社区对 i386/Hexagon 架构的 CI 移除计划，反映出对资源高效利用和聚焦主流硬件生态的战略调整。尽管无官方博客或会议发布，但活跃的代码贡献和清晰的版本升级路径（v0.23.0 待发布）表明，TVM 仍处于高速演进阶段，持续增强其作为开源深度学习编译栈的行业地位。
+apache/tvm-ffi,Kernels,Assess,0.7473459096437666,Apache TVM 的外部函数接口（FFI）组件，定义了跨语言与跨框架的交互标准，支持 Python 与底层编译运行时的无缝对接。,2026 年 1 月，Apache TVM FFI 社区保持高度活跃，围绕 v0.1.8 版本完成了一次密集的迭代发布周期。核心进展体现在对底层稳定性的强化上，包括修复关键的元数据解析崩溃（Issue #208）、回滚破坏性变更（PR #406）以及增强对低版本 PyTorch 的兼容性（PR #414）。同时，开发者体验显著提升，新增了 `kw_only` 参数支持（PR #384）与自动生成 `__repr__` 方法（PR #411），使 Python 端的 FFI 接口更符合现代 Python 编程规范。社区在版本发布策略上体现出“快速响应 + 小步快跑”的特点，通过多个 post 版本快速修复生产问题。尽管该月未有官方博客或会议发布，但 NVIDIA CUTLASS 的集成支持表明其作为跨框架 FFI 标准的影响力正持续扩大。整体来看，TVM FFI 在 2026-01 成功完成了从“功能可用”向“生产健壮”的关键转型，为深度学习编译器生态系统提供了更可靠的底层接口基础。
+axolotl-ai-cloud/axolotl,finetune,Trial,0.752158486614974,,
+bitsandbytes-foundation/bitsandbytes,Pretraining,Trial,0.6960977285077358,,
+containers/ramalama,inference,Trial,0.7721623473565222,,
+coze-dev/coze-loop,AIAgent,Assess,0.8089947150463775,,
+coze-dev/coze-studio,AIAgent,Assess,2.9572748267898374,,
+facebookexperimental/triton,Kernels,Assess,0.857909198339736,Facebook (Meta) 维护的 Triton 编译器实验性分支，用于探索和验证如 TLX 语言扩展与底层 IR 优化等前沿特性。,在 2026 年 1 月，facebookexperimental/triton 仓库虽未发布新版本，但社区活跃度显著，核心开发团队集中于 TLX 语言扩展与底层 IR 优化的攻坚。多个关键 PR 被合并，涵盖内存规划统一（PR #807）、FP8 类型处理增强（PR #806）、异步操作重构（PR #809）、布局传播修复（PR #805）及调试工具改进（PR #811）等方向，体现出项目正从“原型验证”向“生产级编译器架构”演进。尤其值得注意的是，针对 AMD 架构的 FP8 编译缺陷修复（PR #793）和 constexpr 支持完善（PR #804、#812），表明团队正积极提升多硬件平台兼容性与开发者体验。尽管无官方博客或会议曝光，但社区外部已有技术讨论（如 @matt_dz 的线性布局概念）暗示其设计思想正在被更广泛传播。整体来看，该月 Triton 在技术深度与工程稳定性上取得实质性进展，为未来集成到 PyTorch 生态系统奠定了坚实基础。
+facebookresearch/CUTracer,Kernels,Assess,0.16221114306325982,Facebook Research 开发的 CUDA 内核动态分析工具，支持流式分析与数据竞争检测，用于深入调试 GPU 并发性能问题。,在 2026 年 1 月，facebookresearch/CUTracer 项目在功能演进上取得显著进展，尽管未发布任何新版本，但通过多个高质量 PR 合并，大幅增强了其作为 CUDA 内核动态分析工具的能力。核心改进集中在 CLI 分析系统的模块化重构，新增了流式分组、输出格式控制、数据采样与过滤等实用功能，极大提升了用户对大规模 GPU 跟踪数据的处理效率。同时，项目积极适配最新硬件生态，新增对 CUDA 13.1 和 cuDNN 9.15.1.9 的支持，并引入了用于数据竞争检测的随机延迟注入机制，为调试复杂 GPU 并发问题提供了新手段。此外，Issue #104 显示团队正关注 NVIDIA GB200 等新架构的兼容性，体现其对前沿硬件的前瞻性支持。整体来看，该月社区活动活跃，主要由 Facebook 内部团队驱动，属于稳健的工程迭代，未出现安全事件或重大争议。虽然缺乏外部宣传或会议曝光，但其内部开发节奏清晰、目标明确，为后续正式发布奠定了坚实基础。
+facebookresearch/faiss,Pretraining,Assess,1.1277496558491495,,
+flagos-ai/FlagGems,Kernels,Assess,0.8829830020322809,FlagOS 生态下的 AI 算子库，提供了一系列针对多硬件平台优化的高性能算子，旨在增强大模型在异构算力上的表现。,在 2026 年 1 月，FlagGems 项目展现出强劲的工程迭代节奏，核心围绕 v4.2.0 和 v4.2.1.rc.0 两个版本的发布展开。项目团队持续聚焦算子性能优化与多硬件平台兼容性提升，新增 FLA（DeltaNet）与 SUNRISE 后端支持，显著拓宽了其在新型大模型架构和国产 AI 芯片上的适用范围。关键 Bug 修复覆盖了从底层内核（如 baddbmm、grouped_topk）到上层 API（如 only_enable）的多个层面，体现出团队对稳定性和用户体验的高度重视。社区活跃度良好，多个来自不同团队（PerfXLab、Advanced Compiler、KMPL、KunlunXin）的贡献者积极参与，推动了分布式优化与多厂商适配的协同演进。尽管本月未见外部公开技术分享或行业会议曝光，但项目内部的高频迭代与高质量 PR 合并表明其正稳步构建一个稳定、高效、开放的 AI 算子生态，为 FlagOS 整体技术栈提供坚实支撑。
+flagos-ai/FlagGems,Pretraining,Assess,0.0039738183323416035,FlagOS 生态下的 AI 算子库，提供了一系列针对多硬件平台优化的高性能算子，旨在增强大模型在异构算力上的表现。,在 2026 年 1 月，FlagGems 项目展现出强劲的工程迭代节奏，核心围绕 v4.2.0 和 v4.2.1.rc.0 两个版本的发布展开。项目团队持续聚焦算子性能优化与多硬件平台兼容性提升，新增 FLA（DeltaNet）与 SUNRISE 后端支持，显著拓宽了其在新型大模型架构和国产 AI 芯片上的适用范围。关键 Bug 修复覆盖了从底层内核（如 baddbmm、grouped_topk）到上层 API（如 only_enable）的多个层面，体现出团队对稳定性和用户体验的高度重视。社区活跃度良好，多个来自不同团队（PerfXLab、Advanced Compiler、KMPL、KunlunXin）的贡献者积极参与，推动了分布式优化与多厂商适配的协同演进。尽管本月未见外部公开技术分享或行业会议曝光，但项目内部的高频迭代与高质量 PR 合并表明其正稳步构建一个稳定、高效、开放的 AI 算子生态，为 FlagOS 整体技术栈提供坚实支撑。
+ggml-org/llama.cpp,inference,Adopt,1.9351078810695566,,
+hiyouga/EasyR1,RL,Assess,0.7298450326989628,,
+hiyouga/LLaMA-Factory,finetune,Adopt,0.9465384725935768,,
+huggingface/accelerate,Pretraining,Trial,1.0261319445740127,,
+huggingface/open-r1,RL,Assess,1.2991336027974363,,
+huggingface/peft,finetune,Adopt,1.0031781642655564,,
+huggingface/text-generation-inference,inference,Trial,0.6462247851439473,,
+huggingface/transformers,finetune,Adopt,4,,
+huggingface/trl,RL,Adopt,2.7879761220160617,,
+inclusionAI/AReaL,RL,Trial,1.0412461734907672,,
+inclusionAI/dInfer,inference,Assess,0.2901570609489945,,
+jax-ml/jax,Pretraining,Assess,1.2242414799671797,,
+jd-opensource/xllm,inference,Assess,0.48305257156830095,,
+kserve/kserve,inference,Assess,0.7309495267830564,,
+kvcache-ai/Mooncake,inference,Assess,0.7467255078750654,,
+kvcache-ai/ktransformers,inference,Trial,0.7355327868303151,,
+linkedin/Liger-Kernel,Kernels,Assess,0.9525271610737589,LinkedIn 开源的高效 Triton 内核库，专为大模型（LLM）训练优化，支持 Hugging Face Transformers，致力于提升模型训练吞吐量。,在 2026 年 1 月，linkedin/Liger-Kernel 仓库虽未发布新版本，但社区开发活动极为活跃，技术演进方向清晰。核心工作聚焦于两大战略层面：一是应对 Hugging Face Transformers v5 的发布，系统性地解决新版本带来的兼容性问题，如 MoE 结构和 RoPE 参数的变更。二是大力拓展硬件支持版图，特别是通过 RFC 和性能优化议题，积极推动与华为 Ascend NPU 的深度集成，展现了项目向多硬件后端扩展的雄心。这表明 Liger-Kernel 已从一个专注于 GPU 性能优化的内核库，逐步发展为一个致力于支持多样化 AI 硬件和前沿模型架构的开放生态项目。其发展重心正从单纯的速度提升，转向生态兼容性、可移植性和多硬件适配，以巩固其在高效大模型训练领域的基础设施地位。
+llm-d/llm-d,inference,Assess,0.6299858075411987,,
+meta-pytorch/OpenEnv,RL,Assess,0.6322884481297356,,
+meta-pytorch/monarch,Pretraining,Assess,0.6840720925415829,,
+meta-pytorch/torchcomms,Pretraining,Assess,0.4915756150176204,,
+meta-pytorch/torchforge,RL,Assess,0.5394025236866955,,
+meta-pytorch/torchstore,Pretraining,Assess,0.3068679769187384,,
+meta-pytorch/tritonbench,Kernels,Assess,0.6213611165088015,Meta 开发的 PyTorch 与 Triton 性能基准测试工具，用于评估和对比不同硬件与编译器配置下的模型运行效率。,在2026年1月，meta-pytorch/tritonbench 仓库展现出高度活跃的开发节奏，虽未发布正式版本，但通过 `dev20260124` 开发标签持续交付改进。本月共合并10项以上 Pull Request，核心集中在性能评估准确性提升（如GPU计时优化）、设备兼容性增强（AMD、MTIA支持）、构建系统效率改进（BUCK重构）及环境变量安全性修复。这些变更表明项目正朝着更稳定、更广泛硬件支持的方向演进，尤其在非NVIDIA平台上投入显著。外部方面，PyTorch 2.10 的发布强化了 TritonBench 在官方性能生态中的地位，进一步巩固其作为 PyTorch 性能基准测试核心工具的角色。虽然未出现公开讨论或安全事件，但密集的代码提交和内部版本发布反映出项目在Meta内部的高优先级，预计将在2026年第二季度随着PyTorch Conference的临近迎来更多公开进展。
+meta-pytorch/tritonparse,Kernels,Assess,0.38802953621969966,Meta 推出的 Triton 内核自动化诊断与分析工具，提供性能追踪、调试与可视化功能，帮助开发者优化 Triton 代码。,在 2026 年 1 月，TritonParse 项目迎来里程碑式突破，以 v0.4.0 版本为核心，全面构建了针对 Triton 内核的自动化诊断与分析体系。该月的开发活动高度集中于“Autotune 分析”功能的完整落地，从后端事件生成（PR #315）、会话追踪（PR #314）、前端展示（PR #317）到测试覆盖（PR #318）和示例数据更新（PR #321），形成闭环。同时，新增的 `bisect` 命令和 uv 包管理支持大幅提升开发者在回归测试与构建环节的效率。项目虽无公开会议或新闻，但其功能演进与 PyTorch 官方发布的《Warp Specialization in Triton》技术路线高度协同，表明其已成为 Triton 生态底层调试工具链的关键一环。整体来看，TritonParse 在本月实现了从“可视化工具”向“智能分析平台”的跃迁，社区活跃度极高，开发节奏紧凑，技术方向清晰，展现出强大的工程执行力和前瞻性，有望成为未来 Triton 开发者不可或缺的调试核心工具。
+michaelfeil/infinity,inference,Assess,0.4594286856485382,,
+microsoft/DeepSpeed,Pretraining,Adopt,0.875777051177572,,
+microsoft/agent-lightning,RL,Trial,0.9629156071982546,,
+microsoft/onnxruntime,inference,Adopt,2.110691195416306,,
+microsoft/triton-shared,Kernels,Assess,0.43498088568072285,微软开发的 Triton 编译器共享中间组件，旨在为不同编译器后端提供通用的中间表示层（目前处于维护调整阶段）。,在2026年1月，microsoft/triton-shared 仓库的技术活动几乎完全停滞，未有新版本发布或重要代码合并。社区的核心动态集中于对项目命运的担忧。一个长期存在的夜间构建失败问题（#353）仍在被讨论，而核心贡献者发起的“未来何去何从”（#368）讨论，以及README中明确的维护状态通知，共同揭示了项目已被微软官方停止维护的严峻现实。尽管底层的 Triton 编译器（triton-lang/triton）仍在积极发展，但 triton-shared 作为其共享中间层的角色已被放弃。本月没有任何外部公告、博客或会议提及该项目，进一步证实其已退出活跃开发。综合来看，triton-shared 在2026年初已沦为一个停滞的“幽灵项目”，社区的核心关注点已从技术演进转向如何应对项目终止后的挑战。
+mlc-ai/mlc-llm,inference,Assess,0.7132267091287907,,
+modelscope/DiffSynth-Studio,inference,Assess,0.6192796312867828,,
+modelscope/data-juicer,Pretraining,Assess,0.4483808816143152,,
+modelscope/modelscope,finetune,Trial,0.6745464897152309,,
+modelscope/ms-swift,finetune,Trial,1.1361729772749025,,
+modular/modular,inference,Assess,1.044424140954281,,
+modularml/mojo,Kernels,Assess,1.8553524567912407,一种面向 AI 开发者的相关高性能编程语言，结合了 Python 的易用性与 C++ 的性能，旨在统一 AI 与系统编程。,在 2026 年 1 月，Mojo 语言虽无公开的 GitHub 活动（因主仓库未开源），但社区与生态进展显著。Modular 公司于 2025 年底正式公布 Mojo 1.0 路线图，目标在 2026 年夏末发布稳定版本，标志着该语言从实验性项目向生产级语言的关键转型。1 月，Oreate AI 发布的全面入门指南进一步推动了开发者社区的关注，表明 Mojo 正逐步被主流 AI 工程师接纳为 Python 的高性能替代方案。同时，官方确认弃用 REPL 支持，集中资源优化 GPU 和异构硬件编译能力。尽管核心编译器仍为闭源，但标准库开源与路线图透明化增强了社区信任。整体来看，2026-01 是 Mojo 从“技术演示”走向“行业共识”的关键月份，其影响力主要体现在生态认知与长期规划，而非代码提交。未来趋势指向 Mojo 成为 AI 与系统编程统一语言，可能在 2027 年后逐步取代部分 C++ 与 Python 在高性能计算中的角色。
+ollama/ollama,inference,Adopt,2.313473165895899,,
+openvinotoolkit/openvino,inference,Assess,1.1555778653678201,,
+openxla/xla,Kernels,Assess,1.600040237812364,一个用于机器学习的领域特定编译器，通过线性代数优化来加速 TensorFlow、PyTorch 等框架在各类硬件上的模型运行。,在 2026 年 1 月，openxla/xla 仓库虽未发布新版本，但社区活动保持稳定且聚焦于工程稳健性与硬件兼容性。核心进展体现在对 AMD ROCm 的 CI 支持（PR #36893）和多个关键修复上，尤其在 XLA:GPU/Triton 后端中解决了可能导致 CUDA 崩溃的越界访问问题（PR #36883），显著提升了生产环境的稳定性。同时，HLO 解析器中的拼写错误修复（PR #36803）和集合通信调试优化（PR #36846）体现了对代码质量和开发者体验的持续关注。尽管当月未出现新功能重大的发布或公开会议，但通过社区周报（1月16日）可见开发节奏持续，且开源生态协同趋势明显 —— 特别是与 PyTorch/XLA 向 OpenXLA 迁移的长期战略紧密联动。整体而言，该月 OpenXLA 的发展重心从“功能扩展”转向“生态加固”，通过完善基础设施（如 CI）、提升调试能力与修复底层缺陷，夯实了其作为统一 ML 编译器平台的可靠性基础，为 2026 年更大规模的框架整合做好了准备。
+pytorch/ao,Pretraining,Trial,0.8036862939962965,,
+pytorch/executorch,inference,Assess,1.1566181451888546,,
+pytorch/helion,Kernels,Assess,0.8733745074096821,专为 PyTorch 设计的高性能内核开发库，提供自动调优和跨平台支持（包括 XPU），旨在从底层优化 AI 模型的计算效率。,2026 年 1 月，PyTorch Helion 仓库在功能与稳定性方面取得显著进展。核心贡献者持续推动高性能内核开发，发布了 v0.2.10 版本，重点优化文档与用户体验，同时通过多个 PR 引入 epilogue subtiling 与 LFBO 搜索多样性增强等关键特性，显著提升自动调优能力。多个 XPU 和 softmax 相关的 Bug 修复增强了跨平台兼容性。社区活跃度体现在两个重要开放 Issue 中，尤其是对 nn.Parameter 的支持请求，预示着 Helion 正逐步融入 PyTorch 原生生态，从底层 DSL 向更高级别 API 演进。虽然本月无官方博客或会议新动态，但 PyTorch Conference Europe 2026 的官宣为 Helion 在 2026 年的社区推广埋下伏笔。整体来看，Helion 在 2026-01 展现出清晰的技术演进路径——从底层内核优化向开发者友好性与框架整合并重的方向稳步前进。
+pytorch/pytorch,Pretraining,Adopt,3.4993972007347427,,
+pytorch/rl,RL,Trial,1.1152776842249046,,
+pytorch/torchchat,inference,Assess,0.35943268796809613,,
+pytorch/torchft,Pretraining,Assess,0.38255280964274896,,
+pytorch/torchtitan,Pretraining,Assess,0.7354537879858168,,
+pytorch/torchtune,finetune,Trial,0.4121262279010141,,
+ray-project/ray,Pretraining,Adopt,2.20413571426924,,
+redhat-et/MCU,Kernels,Assess,0,Red Hat 研发的模型缓存单元（Model Caching Unit），旨在优化 AI 推理场景下的模型加载与显存管理，提升资源利用率。,在 2026 年 1 月，redhat-et/MCU 仓库保持了低频但稳定的维护节奏。核心活动集中于版本发布与缺陷修复，主要更新为 v0.1.2 版本的发布，该版本修复了文档链接失效和 GPU 检查逻辑错误等关键稳定性问题，体现了团队对生产环境可靠性的重视。虽然未引入显著新功能，但多个重要修复 PR（如 vLLM 缓存支持、Triton 内核兼容性）已在 1 月下旬提交待审，显示出开发团队对模型缓存系统扩展性的持续投入。社区互动方面，Issue #164 的提出为未来集成 Kyverno 安全策略提供了潜在路线图。整体来看，该仓库处于维护与演进并行的阶段：稳定版本持续发布，新功能逐步积累，但尚未进入快速迭代期。外部生态未见相关技术文章或会议曝光，影响力仍局限于内部或红帽生态内。建议后续关注未合并 PR 的进展，以判断其是否会在 2026 年第二季度成为新版本的发布基础。
+sgl-project/ome,inference,Assess,0.4105831126407252,,
+sgl-project/sglang,inference,Adopt,2.213095483404224,,
+thu-ml/tianshou,RL,Assess,0.9780443890945097,,
+thu-pacman/chitu,inference,Assess,0.33178086258634865,,
+thunlp/OpenDelta,finetune,Assess,0.1585605451042033,,
+tile-ai/tilelang,Kernels,Assess,1.2426191615095572,一种面向高性能 AI 内核开发的编程语言，通过创新的 Tile 抽象和调度机制，简化了跨硬件平台的算子优化与生成。,2026 年 1 月，tile-ai/tilelang 仓库在社区活跃度与技术演进方面表现出强劲势头。核心进展集中于 v0.1.7.post3 版本的发布，该版本不仅修复了多个关键 Bug（如 FP4 向量化、CuTeDSL 后端、边界检查等），还引入了两项重要增强：一是通过 `T.alloc_barrier` 重构屏障管理机制，简化了异步同步编程模型；二是支持构建日期元数据，极大提升了发布版本的可追溯性与工程管理能力。此外，开发者持续优化对 AMD、Metal 等异构硬件的支持，显示出项目对多平台生态的重视。尽管本月未发布新论文或官方会议动态，但密集的 PR 活动（共 10+ 个有效关闭）和围绕核心编译器优化的深入协作，表明项目正稳步从原型走向生产级框架。开发团队以高质量、小步快跑的迭代模式，持续夯实 TileLang 作为高性能 AI 内核开发语言的底层能力，为后续的调度自动化与编译器集成打下坚实基础。
+triton-lang/triton,Kernels,Trial,3.6594958141032072,一种用于编写高效深度学习原语的语言和编译器，旨在简化高性能 GPU 内核的开发，被广泛应用于 AI 模型加速。,2026 年 1 月，Triton 社区展现了强劲的开发活力，以 v3.6.0 的发布为核心，完成了多项关键功能升级与缺陷修复。在硬件支持方面，对 AMD 和 NVIDIA 最新架构（如 GFX1250、Blackwell）的优化显著增强，特别是在张量内存操作（TMA、Async Scatter）和编译流程（MIR Swap、LLVM 选项控制）上取得实质性突破。Gluon DSL 的持续演进进一步巩固了其作为高性能 DSL 的地位，而社区对 JIT 缓存与编译器内部结构的深入讨论，预示着未来版本将更注重系统稳定性和资源效率。同时，外部研究（如 TechRxiv 论文）开始将 Triton 视为自动内核生成和 AI 编译器创新的重要平台，提升了其在学术界的影响力。整体来看，Triton 在 2026 年初已从“高性能内核编写工具”向“端到端 AI 编译系统”稳步演进，生态成熟度显著提升。
+unslothai/unsloth,finetune,Trial,1.2289674851233943,,
+vipshop/cache-dit,inference,Assess,0.4849107016021459,,
+vllm-project/aibrix,inference,Assess,0.573985783676032,,
+vllm-project/production-stack,inference,Assess,0.5260777145190151,,
+vllm-project/vllm,inference,Adopt,2.5517706880645212,this is vllm,this is community update
+volcengine/verl,RL,Adopt,2.733252807568525,,
+vwxyzjn/cleanrl,RL,Assess,0.881766602817541,,
+xdit-project/xDiT,inference,Assess,0.4519633239637637,,
+xorbitsai/inference,inference,Assess,0.6996844664782123,,
+yifan123/flow_grpo,RL,Assess,0.3750344826415263,,

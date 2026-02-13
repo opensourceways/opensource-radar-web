@@ -27,7 +27,7 @@
 
   function init() {
     bindEvents();
-    showEmptyState();
+    loadDefaultData();
   }
 
   function bindEvents() {
@@ -37,6 +37,28 @@
     btnPdf.addEventListener('click', handleDownloadPDF);
     btnBack.addEventListener('click', showRadarView);
     window.addEventListener('resize', debounce(handleResize, 250));
+  }
+
+  async function loadDefaultData() {
+    try {
+      const response = await fetch('data/radar_data_202601.csv', { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const csvText = await response.text();
+      radarItems = RadarData.parseCSV(csvText);
+
+      if (radarItems.length === 0) {
+        showEmptyState();
+        return;
+      }
+
+      showRadarView();
+    } catch (err) {
+      console.warn('Default data load failed:', err);
+      showEmptyState();
+    }
   }
 
   // ===================== File Upload =====================
