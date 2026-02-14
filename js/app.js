@@ -311,42 +311,77 @@
 
   /**
    * Load Chinese font for PDF generation
+   * Tries multiple CDN sources for reliability
    */
   async function loadChineseFont(pdf) {
     if (chineseFontLoaded) return;
 
-    try {
-      // Try to load font from CDN
-      const fontUrl = 'https://cdn.jsdelivr.net/gh/sunnylqm/jsPDF@master/dist/fonts/NotoSansSC-Regular-normal.js';
-      
-      await new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = fontUrl;
-        script.onload = () => {
-          try {
-            if (window.NotoSansSCRegular) {
-              pdf.addFileToVFS('NotoSansSC-Regular.ttf', window.NotoSansSCRegular);
-              pdf.addFont('NotoSansSC-Regular.ttf', 'NotoSansSC', 'normal');
-              pdf.addFont('NotoSansSC-Regular.ttf', 'NotoSansSC', 'bold');
-              fontName = 'NotoSansSC';
-              chineseFontLoaded = true;
-              console.log('Chinese font loaded successfully');
-            }
-            resolve();
-          } catch (err) {
-            console.warn('Font registration failed:', err);
-            resolve();
-          }
-        };
-        script.onerror = () => {
-          console.warn('Failed to load Chinese font from CDN, using fallback');
-          resolve();
-        };
-        document.head.appendChild(script);
-      });
-    } catch (err) {
-      console.error('Error loading Chinese font:', err);
+    // List of CDN URLs to try (in order of preference)
+    const fontUrls = [
+      'https://cdn.jsdelivr.net/gh/sunnylqm/jsPDF@master/dist/fonts/NotoSansSC-Regular-normal.js',
+      'https://unpkg.com/jspdf-font-noto-sans-sc@1.0.0/NotoSansSC-Regular-normal.js',
+      './fonts/NotoSansSC-normal.js'  // Local fallback
+    ];
+
+    for (const fontUrl of fontUrls) {
+      try {
+        const success = await tryLoadFont(fontUrl, pdf);
+        if (success) {
+          console.log('Chinese font loaded successfully from:', fontUrl);
+          return;
+        }
+      } catch (err) {
+        console.warn('Failed to load font from:', fontUrl, err);
+      }
     }
+    
+    console.warn('All font sources failed, using fallback helvetica font');
+    chineseFontLoaded = true; // Prevent retrying
+  }
+
+  /**
+   * Try to load font from a specific URL
+   */
+  function tryLoadFont(url, pdf) {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = url;
+      
+      const timeout = setTimeout(() => {
+        script.remove();
+        resolve(false);
+      }, 5000); // 5 second timeout
+      
+      script.onload = () => {
+        clearTimeout(timeout);
+        try {
+          if (window.NotoSansSCRegular) {
+            pdf.addFileToVFS('NotoSansSC-Regular.ttf', window.NotoSansSCRegular);
+            pdf.addFont('NotoSansSC-Regular.ttf', 'NotoSansSC', 'normal');
+            pdf.addFont('NotoSansSC-Regular.ttf', 'NotoSansSC', 'bold');
+            fontName = 'NotoSansSC';
+            chineseFontLoaded = true;
+            script.remove();
+            resolve(true);
+          } else {
+            script.remove();
+            resolve(false);
+          }
+        } catch (err) {
+          console.warn('Font registration failed:', err);
+          script.remove();
+          resolve(false);
+        }
+      };
+      
+      script.onerror = () => {
+        clearTimeout(timeout);
+        script.remove();
+        resolve(false);
+      };
+      
+      document.head.appendChild(script);
+    });
   }
 
   async function handleDownloadPDF() {
