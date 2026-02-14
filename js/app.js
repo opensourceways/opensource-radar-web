@@ -306,6 +306,85 @@
 
   // ===================== PDF Generation =====================
 
+  let chineseFontLoaded = false;
+  let fontName = 'helvetica';
+
+  /**
+   * Load Chinese font for PDF generation
+   * Tries multiple CDN sources for reliability
+   */
+  async function loadChineseFont(pdf) {
+    if (chineseFontLoaded) return;
+
+    // List of CDN URLs to try (in order of preference)
+    const fontUrls = [
+      'https://cdn.jsdelivr.net/gh/sunnylqm/jsPDF@master/dist/fonts/NotoSansSC-Regular-normal.js',
+      'https://unpkg.com/jspdf-font-noto-sans-sc@1.0.0/NotoSansSC-Regular-normal.js',
+      './fonts/NotoSansSC-normal.js'  // Local fallback
+    ];
+
+    for (const fontUrl of fontUrls) {
+      try {
+        const success = await tryLoadFont(fontUrl, pdf);
+        if (success) {
+          console.log('Chinese font loaded successfully from:', fontUrl);
+          return;
+        }
+      } catch (err) {
+        console.warn('Failed to load font from:', fontUrl, err);
+      }
+    }
+    
+    console.warn('All font sources failed, using fallback helvetica font');
+    chineseFontLoaded = true; // Prevent retrying
+  }
+
+  /**
+   * Try to load font from a specific URL
+   */
+  function tryLoadFont(url, pdf) {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = url;
+      
+      const timeout = setTimeout(() => {
+        script.remove();
+        resolve(false);
+      }, 5000); // 5 second timeout
+      
+      script.onload = () => {
+        clearTimeout(timeout);
+        try {
+          if (window.NotoSansSCRegular) {
+            pdf.addFileToVFS('NotoSansSC-Regular.ttf', window.NotoSansSCRegular);
+            pdf.addFont('NotoSansSC-Regular.ttf', 'NotoSansSC', 'normal');
+            // Note: Using same font for bold style. For true bold, load separate bold font file.
+            pdf.addFont('NotoSansSC-Regular.ttf', 'NotoSansSC', 'bold');
+            fontName = 'NotoSansSC';
+            chineseFontLoaded = true;
+            script.remove();
+            resolve(true);
+          } else {
+            script.remove();
+            resolve(false);
+          }
+        } catch (err) {
+          console.warn('Font registration failed:', err);
+          script.remove();
+          resolve(false);
+        }
+      };
+      
+      script.onerror = () => {
+        clearTimeout(timeout);
+        script.remove();
+        resolve(false);
+      };
+      
+      document.head.appendChild(script);
+    });
+  }
+
   async function handleDownloadPDF() {
     if (radarItems.length === 0) {
       alert('No data to export yet. Load Excel or sample data first.');
@@ -339,6 +418,9 @@
     const margin = 15;
     const contentWidth = pageWidth - margin * 2;
 
+    // Load Chinese font
+    await loadChineseFont(pdf);
+
     const sections = RadarData.QUADRANTS;
 
     for (let si = 0; si < sections.length; si++) {
@@ -358,7 +440,7 @@
       let y = margin + chartSize + 8;
       const rgb = hexToRgb(color);
       pdf.setFontSize(18);
-      pdf.setFont('helvetica', 'bold');
+      pdf.setFont(fontName, 'bold');
       pdf.setTextColor(rgb.r, rgb.g, rgb.b);
       pdf.text(sectionName, margin, y);
       y += 3;
@@ -385,7 +467,7 @@
 
         // Ring title
         pdf.setFontSize(14);
-        pdf.setFont('helvetica', 'bold');
+        pdf.setFont(fontName, 'bold');
         pdf.setTextColor(80, 80, 80);
         pdf.text(ring, margin, y);
         y += 2;
@@ -411,7 +493,7 @@
           pdf.setFillColor(rgb.r, rgb.g, rgb.b);
           pdf.circle(margin + 3, y - 1.5, 3, 'F');
           pdf.setFontSize(7);
-          pdf.setFont('helvetica', 'bold');
+          pdf.setFont(fontName, 'bold');
           pdf.setTextColor(255, 255, 255);
           const idStr = String(item.id);
           const idWidth = pdf.getTextWidth(idStr);
@@ -419,7 +501,7 @@
 
           // Item name
           pdf.setFontSize(11);
-          pdf.setFont('helvetica', 'bold');
+          pdf.setFont(fontName, 'bold');
           pdf.setTextColor(50, 50, 50);
           let nameStr = item.name;
           if (item.movement === 'new') nameStr += '  ▲ New';
@@ -429,7 +511,7 @@
 
           // Description
           pdf.setFontSize(9);
-          pdf.setFont('helvetica', 'normal');
+          pdf.setFont(fontName, 'normal');
           pdf.setTextColor(80, 80, 80);
           descLines.forEach((line) => {
             if (y > pageHeight - margin) {
