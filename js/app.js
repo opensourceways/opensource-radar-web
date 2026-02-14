@@ -358,6 +358,7 @@
           if (window.NotoSansSCRegular) {
             pdf.addFileToVFS('NotoSansSC-Regular.ttf', window.NotoSansSCRegular);
             pdf.addFont('NotoSansSC-Regular.ttf', 'NotoSansSC', 'normal');
+            // Note: Using same font for bold style. For true bold, load separate bold font file.
             pdf.addFont('NotoSansSC-Regular.ttf', 'NotoSansSC', 'bold');
             fontName = 'NotoSansSC';
             chineseFontLoaded = true;

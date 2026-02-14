@@ -90,11 +90,11 @@ In a browser with Chinese support:
 
 ### 字体加载缓慢 (Font loading slow)
 
-1. 字体文件较大(3-8MB)，首次加载需要时间
+1. 字体文件较大 (3-8 MB)，首次加载需要时间
 2. 建议使用本地托管以提高速度
 3. 可考虑字体子集化以减小文件大小
 
-Font file is large (3-8MB), initial loading takes time. Consider local hosting or font subsetting.
+Font file is large (3-8 MB), initial loading takes time. Consider local hosting or font subsetting.
 
 ## 相关文件 (Related Files)
 

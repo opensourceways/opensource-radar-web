@@ -13,8 +13,7 @@ If you want to host the font file locally for better reliability:
 1. Download Noto Sans SC Regular font from [Google Fonts](https://fonts.google.com/noto/specimen/Noto+Sans+SC)
 
 2. Convert the font to jsPDF format using the font converter:
-   - Visit: https://rawgit.com/MrRio/jsPDF/master/fontconverter/fontconverter.html
-   - Or use: https://peckconsulting.s3.amazonaws.com/fontconverter/fontconverter.html
+   - Visit: https://peckconsulting.s3.amazonaws.com/fontconverter/fontconverter.html
    - Upload the `NotoSansSC-Regular.ttf` file
    - Set font name to: `NotoSansSC`
    - Set style to: `normal`
