@@ -5,6 +5,13 @@
 (function () {
   'use strict';
 
+  // Available data files
+  const DATA_FILES = [
+    { label: '2026-03', file: 'radar_data_202603.csv' },
+    { label: '2026-01', file: 'radar_data_202601.csv' },
+  ];
+  const DEFAULT_FILE = DATA_FILES[0].file;
+
   // State
   let radarItems = [];
   let currentView = 'radar'; // 'radar' | 'detail'
@@ -18,6 +25,7 @@
   const detailRadarContainer = document.getElementById('detail-radar-chart');
   const detailList = document.getElementById('detail-list');
   const fileInput = document.getElementById('file-input');
+  const dataFileSelect = document.getElementById('data-file-select');
   const btnSample = document.getElementById('btn-load-sample');
   const btnExport = document.getElementById('btn-export-excel');
   const btnPdf = document.getElementById('btn-download-pdf');
@@ -26,12 +34,32 @@
   // ===================== Initialization =====================
 
   function init() {
+    populateFileSelect();
     bindEvents();
-    loadDefaultData();
+    const activeFile = getFileFromURL();
+    dataFileSelect.value = activeFile;
+    loadDataFile(activeFile);
+  }
+
+  function populateFileSelect() {
+    DATA_FILES.forEach(({ label, file }) => {
+      const opt = document.createElement('option');
+      opt.value = file;
+      opt.textContent = label;
+      dataFileSelect.appendChild(opt);
+    });
+  }
+
+  function getFileFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get('file');
+    const valid = DATA_FILES.find(d => d.file === requested);
+    return valid ? valid.file : DEFAULT_FILE;
   }
 
   function bindEvents() {
     fileInput.addEventListener('change', handleFileUpload);
+    dataFileSelect.addEventListener('change', handleDataFileChange);
     btnSample.addEventListener('click', handleLoadSample);
     btnExport.addEventListener('click', handleExportExcel);
     btnPdf.addEventListener('click', handleDownloadPDF);
@@ -39,9 +67,17 @@
     window.addEventListener('resize', debounce(handleResize, 250));
   }
 
-  async function loadDefaultData() {
+  function handleDataFileChange() {
+    const file = dataFileSelect.value;
+    const url = new URL(window.location.href);
+    url.searchParams.set('file', file);
+    history.pushState(null, '', url.toString());
+    loadDataFile(file);
+  }
+
+  async function loadDataFile(filename) {
     try {
-      const response = await fetch('data/radar_data_202601.csv', { cache: 'no-store' });
+      const response = await fetch('data/' + filename, { cache: 'no-store' });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -56,7 +92,7 @@
 
       showRadarView();
     } catch (err) {
-      console.warn('Default data load failed:', err);
+      console.warn('Data file load failed:', err);
       showEmptyState();
     }
   }
