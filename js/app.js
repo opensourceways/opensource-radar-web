@@ -368,122 +368,161 @@
   }
 
   async function generatePDF() {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const pageWidth = pdf.internal.pageSize.getWidth();   // 210
-    const pageHeight = pdf.internal.pageSize.getHeight();  // 297
-    const margin = 15;
-    const contentWidth = pageWidth - margin * 2;
+    // Build chart images first (SVG → PNG data URL)
+    const chartImages = {};
+    for (const sectionName of RadarData.QUADRANTS) {
+      const sectionItems = radarItems.filter(i => i.quadrant === sectionName);
+      chartImages[sectionName] = await renderSectionChartToImage(sectionName, sectionItems);
+    }
 
-    const sections = RadarData.QUADRANTS;
+    // Build the full HTML document that will be printed
+    const escHtml = (str) => {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
 
-    for (let si = 0; si < sections.length; si++) {
-      const sectionName = sections[si];
+    let body = '';
+    RadarData.QUADRANTS.forEach((sectionName, si) => {
       const sectionItems = radarItems.filter(i => i.quadrant === sectionName);
       const color = RadarData.QUADRANT_COLORS[sectionName];
+      const chartSrc = chartImages[sectionName];
 
-      if (si > 0) pdf.addPage();
+      body += `<section class="pdf-section${si > 0 ? ' page-break' : ''}">`;
 
-      // --- Render radar chart to image ---
-      const chartImg = await renderSectionChartToImage(sectionName, sectionItems);
-      const chartSize = Math.min(contentWidth, 130); // mm
-      const chartX = margin + (contentWidth - chartSize) / 2;
-      pdf.addImage(chartImg, 'PNG', chartX, margin, chartSize, chartSize);
+      if (chartSrc) {
+        body += `<img class="chart-img" src="${chartSrc}" alt="${escHtml(sectionName)} radar">`;
+      }
 
-      // --- Section title ---
-      let y = margin + chartSize + 8;
-      const rgb = hexToRgb(color);
-      pdf.setFontSize(18);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(rgb.r, rgb.g, rgb.b);
-      pdf.text(sectionName, margin, y);
-      y += 3;
+      body += `<h2 style="color:${escHtml(color)};border-bottom:3px solid ${escHtml(color)}">${escHtml(sectionName)}</h2>`;
 
-      // Line under title
-      pdf.setDrawColor(rgb.r, rgb.g, rgb.b);
-      pdf.setLineWidth(0.5);
-      pdf.line(margin, y, margin + contentWidth, y);
-      y += 6;
-
-      // --- Items grouped by ring ---
       RadarData.RINGS.forEach((ring) => {
         const ringItems = sectionItems
           .filter(i => i.ring === ring)
           .sort((a, b) => a.id - b.id);
-
         if (ringItems.length === 0) return;
 
-        // Check if ring header fits
-        if (y > pageHeight - 20) {
-          pdf.addPage();
-          y = margin;
-        }
-
-        // Ring title
-        pdf.setFontSize(14);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(80, 80, 80);
-        pdf.text(ring, margin, y);
-        y += 2;
-        pdf.setDrawColor(200, 200, 200);
-        pdf.setLineWidth(0.3);
-        pdf.line(margin, y, margin + contentWidth, y);
-        y += 5;
-
+        body += `<h3>${escHtml(ring)}</h3>`;
         ringItems.forEach((item) => {
-          // Estimate space needed for this item
-          const nameHeight = 5;
-          pdf.setFontSize(9);
-          const descLines = pdf.splitTextToSize(item.description || '', contentWidth - 8);
-          const descHeight = descLines.length * 3.8;
-          const totalHeight = nameHeight + descHeight + 4;
+          let badge = '';
+          if (item.movement === 'new') badge = ' <span class="badge badge-new">▲ New</span>';
+          else if (item.movement === 'moved') badge = ' <span class="badge badge-moved">► Moved</span>';
 
-          if (y + totalHeight > pageHeight - margin) {
-            pdf.addPage();
-            y = margin;
+          body += `<div class="item">`;
+          body += `<div class="item-name">${item.id}. ${escHtml(item.name)}${badge}</div>`;
+          if (item.description) {
+            body += `<div class="item-desc">${escHtml(item.description)}</div>`;
           }
-
-          // Item number circle
-          pdf.setFillColor(rgb.r, rgb.g, rgb.b);
-          pdf.circle(margin + 3, y - 1.5, 3, 'F');
-          pdf.setFontSize(7);
-          pdf.setFont('helvetica', 'bold');
-          pdf.setTextColor(255, 255, 255);
-          const idStr = String(item.id);
-          const idWidth = pdf.getTextWidth(idStr);
-          pdf.text(idStr, margin + 3 - idWidth / 2, y - 0.5);
-
-          // Item name
-          pdf.setFontSize(11);
-          pdf.setFont('helvetica', 'bold');
-          pdf.setTextColor(50, 50, 50);
-          let nameStr = item.name;
-          if (item.movement === 'new') nameStr += '  ▲ New';
-          else if (item.movement === 'moved') nameStr += '  ► Moved';
-          pdf.text(nameStr, margin + 8, y);
-          y += 4;
-
-          // Description
-          pdf.setFontSize(9);
-          pdf.setFont('helvetica', 'normal');
-          pdf.setTextColor(80, 80, 80);
-          descLines.forEach((line) => {
-            if (y > pageHeight - margin) {
-              pdf.addPage();
-              y = margin;
-            }
-            pdf.text(line, margin + 4, y);
-            y += 3.8;
-          });
-
-          y += 3;
+          if (item.communityUpdate) {
+            body += `<div class="item-community"><span class="community-label">Community update:</span> ${escHtml(item.communityUpdate)}</div>`;
+          }
+          body += `</div>`;
         });
-
-        y += 2;
       });
-    }
 
-    pdf.save('opensource-radar.pdf');
+      body += `</section>`;
+    });
+
+    const html = `<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>OpenSource Radar</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+                 'Noto Sans CJK SC', 'Source Han Sans CN', Arial, sans-serif;
+    font-size: 12px;
+    color: #333;
+    background: #fff;
+    padding: 20mm 15mm;
+  }
+  .page-break { page-break-before: always; }
+  .chart-img {
+    display: block;
+    margin: 0 auto 16px;
+    max-width: 340px;
+    width: 55%;
+  }
+  h2 {
+    font-size: 18px;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+  h3 {
+    font-size: 14px;
+    color: #505050;
+    margin: 14px 0 4px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #ddd;
+  }
+  .item {
+    margin-bottom: 8px;
+    padding-left: 10px;
+    page-break-inside: avoid;
+  }
+  .item-name {
+    font-size: 12px;
+    font-weight: bold;
+    color: #222;
+    margin-bottom: 2px;
+  }
+  .item-desc {
+    font-size: 10.5px;
+    color: #555;
+    line-height: 1.65;
+  }
+  .item-community {
+    font-size: 10px;
+    color: #666;
+    line-height: 1.6;
+    margin-top: 3px;
+    padding: 4px 6px;
+    background: #f7f7f7;
+    border-left: 2px solid #ccc;
+  }
+  .community-label {
+    font-weight: bold;
+    color: #444;
+  }
+  .badge {
+    font-size: 10px;
+    font-weight: normal;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 4px;
+  }
+  .badge-new   { background: #e6f4ea; color: #2d6a4f; }
+  .badge-moved { background: #fff3cd; color: #856404; }
+  @media print {
+    body { padding: 0; }
+    @page { margin: 15mm; size: A4; }
+  }
+</style>
+</head>
+<body>${body}</body>
+</html>`;
+
+    const win = window.open('', '_blank');
+    if (!win) {
+      alert('弹窗被阻止，请允许此页面打开新窗口后重试。');
+      return;
+    }
+    win.document.write(html);
+    win.document.close();
+    // Wait for images to load before printing
+    win.onload = () => {
+      win.focus();
+      win.print();
+    };
+    // Fallback if onload already fired
+    if (win.document.readyState === 'complete') {
+      win.focus();
+      win.print();
+    }
   }
 
   /**
